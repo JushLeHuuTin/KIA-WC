@@ -1,0 +1,233 @@
+import { useRef, useState } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
+import { useIsDesktop } from '../../hooks/useMediaQuery'
+import { experiences } from './data'
+
+const TITLE = 'Experience Beyond the Match'
+const BODY =
+  'The excitement that begins inside the stadium extends far beyond it. As an official partner of the FIFA World Cup 2026™, Kia expands the tournament experience — from mobility to shared experiences and connection.'
+
+// Loop thủ công (nhân 3 bản dữ liệu) -- tránh dùng Swiper `loop` cho carousel mobile,
+// vì loop gốc của Swiper đã xác nhận không đáng tin cậy trong dự án này
+// (xem ghi chú tương tự trong MainFilmCarousel.tsx).
+const REPEAT_COUNT = 3
+const LOOPED = Array.from({ length: REPEAT_COUNT }, (_, copy) =>
+  experiences.map((item, i) => ({ ...item, key: `${i}-${copy}` })),
+).flat()
+
+function DesktopVersion() {
+  const [activeIndex, setActiveIndex] = useState(0)
+  const active = experiences[activeIndex]
+
+  const goto = (delta: number) => {
+    setActiveIndex((prev) => (prev + delta + experiences.length) % experiences.length)
+  }
+
+  // Thứ tự thumbnail luôn là các item còn lại, bắt đầu ngay sau item đang active
+  // (khớp đúng hành vi xoay vòng thấy trong thiết kế Figma).
+  const thumbnails = experiences
+    .map((item, i) => ({ item, i }))
+    .filter(({ i }) => i !== activeIndex)
+    .sort((a, b) => ((a.i - activeIndex + experiences.length) % experiences.length) - ((b.i - activeIndex + experiences.length) % experiences.length))
+
+  return (
+    <section className="group/exp bg-black px-2 py-6 lg:px-5 lg:py-10">
+      <div className="relative rounded-2xl bg-[#e8eaeb] px-6 pb-10 pt-12 lg:px-20 lg:pb-16 lg:pt-[60px]">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-10%' }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+          className="grid gap-4 lg:grid-cols-2 lg:gap-10"
+        >
+          <h2 className="text-[24px] leading-9 text-[#05141f] lg:text-[36px] lg:leading-[54px]">
+            {TITLE}
+          </h2>
+
+          <p className="text-[14px] leading-6 text-[#303e48] lg:text-[16px] lg:leading-7">
+            {BODY}
+          </p>
+        </motion.div>
+
+        <div className="mt-8 grid grid-cols-1 gap-6 lg:mt-12 lg:grid-cols-2">
+          <button
+            type="button"
+            aria-label={`Play ${active.title}`}
+            onClick={() => goto(1)}
+            className="relative aspect-[4/3] w-full overflow-hidden rounded-xl lg:aspect-auto lg:h-[420px]"
+          >
+            <AnimatePresence mode="wait">
+              <motion.img
+                key={activeIndex}
+                src={active.pc}
+                alt={active.title}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4, ease: 'easeInOut' }}
+                className="absolute inset-0 size-full object-cover"
+              />
+            </AnimatePresence>
+          </button>
+
+          <div className="flex flex-col gap-6 justify-between">
+            <div className="grid grid-cols-3 gap-3">
+              {thumbnails.map(({ item, i }) => (
+                <button
+                  key={item.title}
+                  type="button"
+                  onClick={() => setActiveIndex(i)}
+                  aria-label={`Show ${item.title}`}
+                  className="relative aspect-square overflow-hidden rounded-lg"
+                >
+                  <img src={item.thumb} alt={item.title} className="size-full object-cover" />
+                </button>
+              ))}
+            </div>
+
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeIndex}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.4, ease: 'easeInOut' }}
+                className="flex flex-col gap-2"
+              >
+                <p className="text-[18px] leading-[30px] text-[#05141f]">{active.title}</p>
+                <p className="text-[14px] leading-6 text-[#303e48]">{active.description}</p>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </div>
+
+        <div className="mt-8 flex items-center justify-center gap-1.5 lg:mt-10">
+          {experiences.map((item, i) => (
+            <button
+              key={item.title}
+              type="button"
+              aria-label={`Go to ${item.title}`}
+              onClick={() => setActiveIndex(i)}
+              className={`rounded-full transition-all duration-300 ${i === activeIndex ? 'size-1.5 bg-[#05141f]' : 'size-1 bg-[#4a565e]/40'
+                }`}
+            />
+          ))}
+        </div>
+
+        <button
+          type="button"
+          aria-label="Previous"
+          onClick={() => goto(-1)}
+          className="absolute left-2 top-1/2 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full border border-black/10 bg-white opacity-0 shadow-lg transition-opacity duration-300 group-hover/exp:opacity-100 lg:flex"
+        >
+          <img src="/icons/ic-arrow-back.svg" alt="" className="size-5 invert" />
+        </button>
+        <button
+          type="button"
+          aria-label="Next"
+          onClick={() => goto(1)}
+          className="absolute right-2 top-1/2 hidden size-11 -translate-y-1/2 items-center justify-center rounded-full border border-black/10 bg-white opacity-0 shadow-lg transition-opacity duration-300 group-hover/exp:opacity-100 lg:flex"
+        >
+          <img src="/icons/ic-arrow-forward.svg" alt="" className="size-5 invert" />
+        </button>
+      </div>
+    </section>
+  )
+}
+
+const MOBILE_TRANSITION_MS = 500
+
+function MobileVersion() {
+  const [slideIndex, setSlideIndex] = useState(experiences.length)
+  const [noTransition, setNoTransition] = useState(false)
+  const recenterTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const activeIndex = ((slideIndex % experiences.length) + experiences.length) % experiences.length
+  const active = experiences[activeIndex]
+
+  // Cùng kỹ thuật loop thủ công như MainFilmCarousel: sau khi trượt xong, nếu đã
+  // trôi ra khỏi 1/3 giữa của mảng lặp, âm thầm nhảy về vị trí tương đương ở giữa
+  // (tắt transition đúng lúc nhảy để không bị giật).
+  const goto = (delta: number) => {
+    setSlideIndex((prev) => {
+      const next = prev + delta
+      if (recenterTimeout.current) clearTimeout(recenterTimeout.current)
+      recenterTimeout.current = setTimeout(() => {
+        const target =
+          next < experiences.length
+            ? next + experiences.length
+            : next >= experiences.length * 2
+              ? next - experiences.length
+              : null
+        if (target === null) return
+        setNoTransition(true)
+        setSlideIndex(target)
+        requestAnimationFrame(() => requestAnimationFrame(() => setNoTransition(false)))
+      }, MOBILE_TRANSITION_MS)
+      return next
+    })
+  }
+
+  return (
+    <section className="bg-black px-2 py-6">
+      <div className="rounded-2xl bg-[#e8eaeb] px-6 pb-10 pt-10">
+        <h2 className="text-[24px] leading-9 text-[#05141f]">{TITLE}</h2>
+        <p className="mt-4 text-[14px] leading-6 text-[#303e48]">{BODY}</p>
+
+        <div className="relative mt-8 overflow-hidden rounded-xl">
+          <div
+            className={`flex ${noTransition ? '' : 'transition-transform duration-500 ease-out'}`}
+            style={{ transform: `translateX(-${slideIndex * 100}%)` }}
+          >
+            {LOOPED.map((item) => (
+              <img
+                key={item.key}
+                src={item.mw}
+                alt={item.title}
+                className="aspect-square w-full shrink-0 object-cover"
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-6 flex flex-col gap-2">
+          <p className="text-[16px] leading-7 text-[#05141f]">{active.title}</p>
+          <p className="text-[13px] leading-6 text-[#303e48]">{active.description}</p>
+        </div>
+
+        <div className="mt-6 flex items-center justify-center gap-1.5">
+          {experiences.map((item, i) => (
+            <span
+              key={item.title}
+              className={`rounded-full transition-all duration-300 ${i === activeIndex ? 'size-1.5 bg-[#05141f]' : 'size-1 bg-[#4a565e]/40'
+                }`}
+            />
+          ))}
+        </div>
+
+        <div className="mt-4 flex items-center justify-center gap-4">
+          <button
+            type="button"
+            aria-label="Previous"
+            onClick={() => goto(-1)}
+            className="flex size-10 items-center justify-center rounded-full border border-black/10 bg-white shadow"
+          >
+            <img src="/icons/ic-arrow-back.svg" alt="" className="size-4 invert" />
+          </button>
+          <button
+            type="button"
+            aria-label="Next"
+            onClick={() => goto(1)}
+            className="flex size-10 items-center justify-center rounded-full border border-black/10 bg-white shadow"
+          >
+            <img src="/icons/ic-arrow-forward.svg" alt="" className="size-4 invert" />
+          </button>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+export default function ExperienceCarousel() {
+  const isDesktop = useIsDesktop()
+  return isDesktop ? <DesktopVersion /> : <MobileVersion />
+}
