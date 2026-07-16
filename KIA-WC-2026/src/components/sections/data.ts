@@ -1,26 +1,36 @@
+// Copy lấy đúng theo Figma (khách hàng cung cấp trực tiếp qua ảnh chụp màn hình),
+// không tự diễn giải/paraphrase.
 export const experiences = [
   {
     title: 'Official Tournament Vehicle Support',
     description:
-      'Kia has long supported the mobility of players, officials and fans across FIFA international tournaments, ensuring every match runs smoothly from arrival to departure.',
-    image: '/media/experience/09_1_thumbnail.jpg',
+      'Kia has long supported the mobility of players and officials across FIFA international tournaments, ensuring that every moment flows seamlessly.',
+    pc: '/media/experience/pc-1.jpg',
+    thumb: '/media/experience/pc-1-thumb.jpg',
+    mw: '/media/experience/mw-1.jpg',
   },
   {
-    title: 'Fan Experience',
+    title: 'Youth and Future Generation Programs',
     description:
-      'Interactive football activities bring supporters closer to the game while creating unforgettable moments throughout the tournament.',
-    image: '/media/experience/09_2_thumbnail.jpg',
+      "From youth and grassroots fan moments to futsal and the FIFA eWorld Cup™, Kia continues to support football's future — staying closer to the next generation of fans and dreams.",
+    pc: '/media/experience/pc-2.jpg',
+    thumb: '/media/experience/pc-2-thumb.jpg',
+    mw: '/media/experience/mw-2.jpg',
   },
   {
-    title: 'Innovation Zone',
+    title: 'FIFA Fan Festival',
     description:
-      'Visitors explore Kia mobility technologies and sustainable transportation solutions designed for the future.',
-    image: '/media/experience/09_3_thumbnail.jpg',
+      'A global gathering place beyond the stadium, where fans connect with the passion of football with culture and celebration through mobility experience.',
+    pc: '/media/experience/pc-3.jpg',
+    thumb: '/media/experience/pc-3-thumb.jpg',
+    mw: '/media/experience/mw-3.jpg',
   },
   {
-    title: 'Hospitality',
+    title: 'Brand Booth',
     description:
-      'Premium hospitality spaces provide a comfortable environment where guests can enjoy football together.',
-    image: '/media/experience/09_4_thumbnail.jpg',
+      'A space to experience the present and future of mobility. Through its EV lineup, Kia strives for electrification and sustainability.',
+    pc: '/media/experience/pc-4.jpg',
+    thumb: '/media/experience/pc-4-thumb.jpg',
+    mw: '/media/experience/mw-4.jpg',
   },
 ]
