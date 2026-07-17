@@ -1,5 +1,6 @@
 import { defineArrayMember, defineField, defineType } from 'sanity'
 import { CogIcon } from '@sanity/icons/Cog'
+import { ShareIcon } from '@sanity/icons/Share'
 
 // Dữ liệu dùng chung ở nhiều nơi trên site (khác với các document còn lại, mỗi
 // cái chỉ thuộc về đúng 1 section) -- vd logo Kia xuất hiện ở cả Header lẫn
@@ -26,6 +27,7 @@ export const siteSettings = defineType({
         defineArrayMember({
           type: 'object',
           name: 'socialLink',
+          icon: ShareIcon,
           fields: [
             defineField({
               name: 'platform',

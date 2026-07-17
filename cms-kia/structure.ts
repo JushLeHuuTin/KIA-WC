@@ -1,5 +1,17 @@
+import type { ComponentType } from 'react'
 import type { DefaultDocumentNodeResolver, StructureBuilder, StructureResolver } from 'sanity/structure'
 import { createPagePreview } from './components/PagePreview'
+import { CogIcon } from '@sanity/icons/Cog'
+import { MenuIcon } from '@sanity/icons/Menu'
+import { ExpandIcon } from '@sanity/icons/Expand'
+import { PlayIcon } from '@sanity/icons/Play'
+import { ThLargeIcon } from '@sanity/icons/ThLarge'
+import { OlistIcon } from '@sanity/icons/Olist'
+import { EnterRightIcon } from '@sanity/icons/EnterRight'
+import { ImagesIcon } from '@sanity/icons/Images'
+import { LaunchIcon } from '@sanity/icons/Launch'
+import { RocketIcon } from '@sanity/icons/Rocket'
+import { ThListIcon } from '@sanity/icons/ThList'
 
 // Toàn bộ site là 1 trang landing duy nhất -- mỗi section (hero, main film
 // carousel, phase overview, ...) chỉ có đúng 1 bản ghi (singleton), không phải
@@ -13,10 +25,29 @@ const PREVIEW_ANCHORS: Partial<Record<(typeof SINGLETONS)[number], string>> = {
   phaseDetails: 'phase-1',
 }
 
-function createSingleton(S: StructureBuilder, typeName: string, title: string) {
+// S.listItem() KHÔNG tự lấy icon khai báo trong defineType({icon: ...}) của
+// schema -- phải gán tay lại ở đây, nếu không toàn bộ sidebar chỉ hiện icon
+// folder mặc định giống nhau. Icon phải khớp đúng icon đã đặt cho document đó
+// trong schemaTypes/documents/*.ts (xem STUDIO_CUSTOMIZATION.md mục 8).
+const SINGLETON_ICONS: Record<(typeof SINGLETONS)[number], ComponentType> = {
+  siteSettings: CogIcon,
+  header: MenuIcon,
+  hero: ExpandIcon,
+  mainFilmCarousel: PlayIcon,
+  phaseOverview: ThLargeIcon,
+  phaseDetails: OlistIcon,
+  watchMore: EnterRightIcon,
+  experienceCarousel: ImagesIcon,
+  connectStore: LaunchIcon,
+  outro: RocketIcon,
+  footer: ThListIcon,
+}
+
+function createSingleton(S: StructureBuilder, typeName: (typeof SINGLETONS)[number], title: string) {
   return S.listItem()
     .title(title)
     .id(typeName)
+    .icon(SINGLETON_ICONS[typeName])
     .child(S.document().schemaType(typeName).documentId(typeName).title(title))
 }
 
