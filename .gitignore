@@ -1,4 +1,18 @@
-# Client design source files -- large binaries (raw video/zip exports),
-# never meant to be pushed to the code repo.
-Landing page/
-Landing Page/
+# Bỏ qua hoàn toàn folder Landing page
+/Landing\ page/
+# Các file rác hệ thống
+.DS_Store
+Thumbs.db
+
+# Dependencies của dự án React
+/KIA-WC-2026/node_modules
+/KIA-WC-2026/dist
+
+# Dependencies của Sanity Studio
+/studio/node_modules
+/studio/dist
+
+# Biến môi trường 
+.env
+.env.local
+.env.*.local
