@@ -58,14 +58,16 @@ export default function Footer() {
       {/* Site footer chính */}
       <div className="mt-2 rounded-2xl  px-6 pb-8 pt-10 lg:mt-4 lg:px-20 lg:pb-12 lg:pt-[60px]">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
-          <img src="/icons/kia-logo.svg" alt="Kia" className="h-6 w-auto" />
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:flex lg:gap-[60px]">
+          <img src="/icons/kia-logo.svg" alt="Kia" className="h-6 w-auto lg:h-8" />
+          <div className="flex flex-col gap-8 lg:flex-row lg:gap-[60px]">
             {MENU_COLUMNS.map((col) => (
-              <div key={col.title} className="flex w-[140px] flex-col gap-4 lg:w-[240px]">
+              <div key={col.title} className="flex flex-col gap-4 lg:w-[240px]">
                 <p className="text-[12px] leading-5 text-[#788187]">{col.title}</p>
-                <div className="flex flex-col">
+                {/* Mobile: các link wrap ngang trong cùng 1 cột (đúng thiết kế mobile
+                    Figma) -- khác desktop, nơi mỗi link xuống dòng riêng. */}
+                <div className="flex flex-wrap gap-x-6 gap-y-2 lg:flex-col lg:gap-0">
                   {col.items.map((item) => (
-                    <a key={item} href="#" className="py-2 text-[14px] leading-6 text-white">
+                    <a key={item} href="#" className="text-[14px] leading-6 text-white lg:py-2">
                       {item}
                     </a>
                   ))}

@@ -38,7 +38,7 @@ const PHASES = [
 
 function PhaseCard({ phase, pc }: { phase: (typeof PHASES)[number]; pc: string }) {
   return (
-    <div className="relative aspect-[342/456] w-full overflow-hidden rounded-xl lg:aspect-[342/456]">
+    <div className="relative aspect-square w-full overflow-hidden rounded-xl lg:aspect-[342/456]">
       <img src={pc} alt="" className="absolute inset-0 size-full object-cover" />
       <div className="absolute inset-x-0 top-0 h-1/4 bg-gradient-to-b from-black/60 to-transparent" />
       <p className="absolute left-6 top-6 bg-gradient-to-b from-[#f3f4f5] to-[#f3f4f5]/0 bg-clip-text text-[40px] font-light leading-none text-transparent lg:text-[52px]">
@@ -55,7 +55,7 @@ function PhaseCard({ phase, pc }: { phase: (typeof PHASES)[number]; pc: string }
             e.preventDefault()
             document.getElementById(phase.id)?.scrollIntoView({ behavior: 'smooth' })
           }}
-          className="flex items-center gap-2 text-[16px] leading-7 text-white"
+          className="flex m-auto items-center gap-2 text-[16px] leading-7 text-white"
         >
           Go to section
           <span className="flex size-7 items-center justify-center rounded-full border border-[#636d74]">

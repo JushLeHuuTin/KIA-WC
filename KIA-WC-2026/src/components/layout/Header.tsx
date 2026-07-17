@@ -3,7 +3,7 @@ const NAV_ITEMS = ['Brand', 'Design', 'Vehicle', 'Innovation', 'Newsroom']
 export default function Header() {
   return (
     <header className="fixed top-0 left-0 z-50 flex w-full items-center justify-between px-6 py-5 lg:px-20 lg:py-6">
-      <img src="/icons/kia-logo.svg" alt="Kia" className="h-6 w-auto" />
+      <img src="/icons/kia-logo.svg" alt="Kia" className="h-6 w-auto lg:h-8" />
 
       <nav className="hidden items-center lg:flex">
         {NAV_ITEMS.map((item) => (

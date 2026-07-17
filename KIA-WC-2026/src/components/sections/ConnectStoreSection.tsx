@@ -9,7 +9,7 @@ function LearnMoreButton() {
   return (
     <a
       href="/connect-store"
-      className=" mt-8 rounded inline-flex w-fit items-center gap-2 border border-white/25 px-6 py-3 text-[15px] text-white transition hover:bg-white/10"
+      className="mt-8 self-center rounded inline-flex w-fit items-center gap-2 border border-white/25 px-6 py-3 text-[15px] text-white transition hover:bg-white/10 lg:self-auto"
     >
       Learn more
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -29,15 +29,16 @@ export default function ConnectStoreSection() {
   const isDesktop = useIsDesktop()
 
   return (
-    <section className="bg-black px-2 py-3 lg:px-5 lg:py-4">
-      <div className="relative z-100 flex flex-col gap-8 rounded-2xl bg-[#1c1f21] px-6 py-10 lg:flex-row lg:items-center lg:gap-10 lg:px-20 lg:py-[60px]">
+    <section className=" bg-black px-2 lg:px-5 ">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 w-full bg-gradient-to-t from-[#1e2023] to-transparent" />
+      <div className="relative z-100 flex flex-col-reverse gap-8 overflow-hidden rounded-2xl bg-[#1c1f21] px-6 py-10 lg:flex-row lg:items-center lg:gap-10 lg:px-20 lg:py-[60px]">
         {/* Copy trong card fade-in (đúng rule: "the copy within each card fades in"). */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-10%' }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
-          className="flex flex-col items-start lg:w-1/2"
+          className="flex flex-col items-start lg:w-1/2 "
         >
           <h2 className="text-[24px] leading-9 text-white lg:text-[32px] lg:leading-[42px]">
             FIFA World Cup 2026™
@@ -62,6 +63,7 @@ export default function ConnectStoreSection() {
             className="w-full object-cover"
           />
         </motion.div>
+
       </div>
     </section>
   )

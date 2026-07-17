@@ -245,7 +245,7 @@ function PhaseDetailCard({ phase }: { phase: (typeof PHASES)[number] }) {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, margin: '-10%' }}
           transition={{ duration: 0.6, ease: 'easeOut', delay: 0.4 }}
-          className="relative aspect-video w-full overflow-hidden rounded-xl lg:aspect-auto lg:h-[536px] lg:w-[952px]"
+          className="relative aspect-square w-full overflow-hidden rounded-xl lg:aspect-auto lg:h-[536px] lg:w-[952px]"
         >
 
           <AnimatePresence mode="wait">
@@ -262,14 +262,17 @@ function PhaseDetailCard({ phase }: { phase: (typeof PHASES)[number] }) {
           </AnimatePresence>
 
         </motion.div>
+        {/* Desktop: danh sách toàn bộ item cuộn dọc bên cạnh video, click để active.
+            Mobile: chỉ hiện 1 item đang active + phân trang "01/0N" (đúng thiết kế
+            Figma mobile -- khác hẳn desktop, không phải accordion list). */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, margin: '-10%' }}
           transition={{ duration: 0.6, ease: 'easeOut', delay: 0.6 }}
-          className="flex items-start gap-4 lg:gap-6"
+          className="hidden items-start gap-4 lg:flex lg:gap-6"
         >
-          <div className=" flex w-full flex-col gap-3 overflow-y-auto lg:h-[536px] lg:w-[342px] lg:gap-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex w-full flex-col gap-3 overflow-y-auto lg:h-[536px] lg:w-[342px] lg:gap-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {phase.items.map((item, i) => {
               const isActive = i === activeItem
               return (
@@ -299,7 +302,7 @@ function PhaseDetailCard({ phase }: { phase: (typeof PHASES)[number] }) {
             })}
           </div>
 
-          <div className="hidden flex-col gap-5 lg:flex lg:self-center">
+          <div className="flex flex-col gap-5 lg:self-center">
             <button
               type="button"
               aria-label="Previous item"
@@ -317,7 +320,42 @@ function PhaseDetailCard({ phase }: { phase: (typeof PHASES)[number] }) {
               <img src="/icons/ic-arrow-back.svg" alt="" className="size-6 -rotate-90" />
             </button>
           </div>
+        </motion.div>
 
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, margin: '-10%' }}
+          transition={{ duration: 0.6, ease: 'easeOut', delay: 0.6 }}
+          className="flex flex-col gap-4 lg:hidden"
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeItem}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+            >
+              <p className="text-[18px] leading-[30px] text-white">{active.title}</p>
+              {active.description && (
+                <p className="mt-2 text-[14px] leading-6 text-[#cdd0d2]">{active.description}</p>
+              )}
+            </motion.div>
+          </AnimatePresence>
+
+          <div className="flex items-center justify-start gap-2">
+            <button type="button" aria-label="Previous item" onClick={() => goto(-1)}>
+              <img src="/icons/ic-arrow-back.svg" alt="" className="size-4" />
+            </button>
+            <p className="text-[14px] leading-6 text-white">
+              <span className="font-bold">{String(activeItem + 1).padStart(2, '0')}</span>
+              <span className="text-[#788187]"> /{String(phase.items.length).padStart(2, '0')}</span>
+            </p>
+            <button type="button" aria-label="Next item" onClick={() => goto(1)}>
+              <img src="/icons/ic-arrow-forward.svg" alt="" className="size-4" />
+            </button>
+          </div>
         </motion.div>
 
       </div>

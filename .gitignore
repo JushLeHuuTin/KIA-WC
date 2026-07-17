@@ -8,9 +8,9 @@ Thumbs.db
 /KIA-WC-2026/node_modules
 /KIA-WC-2026/dist
 
-# Dependencies của Sanity Studio
-/studio/node_modules
-/studio/dist
+# Dependencies của Sanity cms-kia
+/cms-kia/node_modules
+/cms-kia/dist
 
 # Biến môi trường 
 .env
