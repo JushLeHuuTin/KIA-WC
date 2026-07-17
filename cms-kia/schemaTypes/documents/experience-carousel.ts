@@ -21,6 +21,7 @@ export const experienceCarousel = defineType({
         defineArrayMember({
           type: 'object',
           name: 'experience',
+          icon: ImageIcon,
           groups: [
             { name: 'content', title: 'Nội dung', icon: TextIcon, default: true },
             { name: 'media', title: 'Hình ảnh', icon: ImageIcon },

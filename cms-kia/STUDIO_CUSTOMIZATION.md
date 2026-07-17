@@ -99,6 +99,48 @@ cỡ), `phaseOverview` (ảnh card), `phaseDetails` → `items` (thumbnail video
 Watch More/Connect Store/Outro, poster Hero) không cần validate vì
 `object-cover` ở đó vốn tự do theo ảnh gốc.
 
+<<<<<<< HEAD
+=======
+## 8. Rà soát lại icon cho hợp lý ngữ nghĩa hơn
+
+Icon ban đầu chọn khá vội (nhiều chỗ tái dùng `ImageIcon`/`TextIcon` chung
+chung hoặc chọn nhầm ý nghĩa). Đổi lại:
+- `hero`: `ImageIcon` → `ExpandIcon` (banner toàn màn hình).
+- `phaseDetails`: `StackIcon` → `OlistIcon` (danh sách có thứ tự, khớp
+  Phase 1→4 tuần tự, phân biệt với `phaseOverview` dùng `ThLargeIcon` —
+  lưới tổng quan).
+- `watchMore`: `PresentationIcon` (không liên quan) → `EnterRightIcon` (CTA
+  dẫn sang xem thêm).
+- `footer`: `PanelLeftIcon` (vốn nghĩa "panel trái", sai ngữ cảnh) →
+  `ThListIcon` (danh sách cột menu).
+
+Bổ sung icon riêng cho **object lồng bên trong array** trước đây không có
+gì (Studio tự hiện icon mặc định chung, không phân biệt được item nào là
+gì khi nhìn lướt danh sách):
+- `header` → `navItem`: `LinkIcon`
+- `siteSettings` → `socialLink`: `ShareIcon`
+- `footer` → `stayInspiredCard`: `ImageIcon`, → `menuColumn`: `FolderIcon`,
+  → `menuColumn.items` (`menuLink`): `LinkIcon`
+- `phaseOverview` → `phase`: `TagIcon`
+- `phaseDetails` → `phaseDetail`: `DocumentTextIcon` (video item con
+  `phaseVideoItem` đã có `PlayIcon` từ trước)
+- `experienceCarousel` → `experience`: `ImageIcon`
+- `mainFilmCarousel` → `film`: `VideoIcon`
+
+Cũng thêm `placeholder` (chữ mờ gợi ý khi field còn trống) cho vài field
+text hay bị hỏi "điền gì vào đây" nhất: `hero.kvTitle`/`kvHeadline`,
+`watchMore.buttonTitle`/`buttonHref`, `footer.stayInspiredHeading`.
+
+**Lưu ý quan trọng:** icon khai báo trong `defineType({icon: ...})` chỉ áp
+dụng cho icon trong form/preview -- **không** tự áp dụng cho `S.listItem()`
+ở sidebar (`structure.ts`). Ban đầu quên việc này nên toàn bộ sidebar vẫn
+hiện icon folder mặc định giống hệt nhau dù đã đổi icon trong schema. Đã
+sửa bằng cách gán tay `.icon(...)` cho từng `S.listItem()` qua map
+`SINGLETON_ICONS` trong `structure.ts` -- **mỗi khi đổi icon của 1 document
+trong schema, phải đổi cả icon tương ứng trong `SINGLETON_ICONS` (structure.ts),
+2 nơi này không tự đồng bộ với nhau.**
+
+>>>>>>> feature/setup-cms
 ## Việc còn có thể làm thêm (chưa làm, nếu cần nâng cấp tiếp)
 
 - Draft-preview thời gian thực (Visual Editing/Presentation Tool đầy đủ) —

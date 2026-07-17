@@ -2,6 +2,7 @@ import { defineArrayMember, defineField, defineType } from 'sanity'
 import { PlayIcon } from '@sanity/icons/Play'
 import { ImageIcon } from '@sanity/icons/Image'
 import { TextIcon } from '@sanity/icons/Text'
+import { VideoIcon } from '@sanity/icons/Video'
 import { YouTubeIdInput } from '../../components/YouTubeIdInput'
 import { withAspectRatioWarning } from '../shared/imageAspectRatio'
 
@@ -20,6 +21,7 @@ export const mainFilmCarousel = defineType({
         defineArrayMember({
           type: 'object',
           name: 'film',
+          icon: VideoIcon,
           groups: [
             { name: 'content', title: 'Nội dung', icon: TextIcon, default: true },
             { name: 'media', title: 'Hình ảnh', icon: ImageIcon },

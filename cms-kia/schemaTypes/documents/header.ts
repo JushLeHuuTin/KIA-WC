@@ -1,5 +1,6 @@
 import { defineArrayMember, defineField, defineType } from 'sanity'
 import { MenuIcon } from '@sanity/icons/Menu'
+import { LinkIcon } from '@sanity/icons/Link'
 
 export const header = defineType({
   name: 'header',
@@ -17,6 +18,7 @@ export const header = defineType({
         defineArrayMember({
           type: 'object',
           name: 'navItem',
+          icon: LinkIcon,
           fields: [
             defineField({ name: 'label', title: 'Tên hiển thị', type: 'string', validation: (rule) => rule.required() }),
             defineField({ name: 'href', title: 'Đường dẫn', type: 'string', validation: (rule) => rule.required() }),

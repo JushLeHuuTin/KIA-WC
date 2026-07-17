@@ -1,8 +1,9 @@
 import { defineArrayMember, defineField, defineType } from 'sanity'
-import { StackIcon } from '@sanity/icons/Stack'
+import { OlistIcon } from '@sanity/icons/Olist'
 import { ImageIcon } from '@sanity/icons/Image'
 import { PlayIcon } from '@sanity/icons/Play'
 import { TextIcon } from '@sanity/icons/Text'
+import { DocumentTextIcon } from '@sanity/icons/DocumentText'
 import { YouTubeIdInput } from '../../components/YouTubeIdInput'
 import { withAspectRatioWarning } from '../shared/imageAspectRatio'
 
@@ -10,7 +11,7 @@ export const phaseDetails = defineType({
   name: 'phaseDetails',
   title: 'Chi tiết các Phase',
   type: 'document',
-  icon: StackIcon,
+  icon: OlistIcon,
   fields: [
     defineField({
       name: 'phases',
@@ -21,6 +22,7 @@ export const phaseDetails = defineType({
         defineArrayMember({
           type: 'object',
           name: 'phaseDetail',
+          icon: DocumentTextIcon,
           // Tách 2 tab "Nội dung" / "Hình ảnh nền" cho gọn -- object này có tới
           // 6 field phẳng + 1 mảng con, để chung 1 form dài sẽ rối.
           groups: [

@@ -1,15 +1,15 @@
 import { defineField, defineType } from 'sanity'
-import { ImageIcon } from '@sanity/icons/Image'
+import { ExpandIcon } from '@sanity/icons/Expand'
 
 export const hero = defineType({
   name: 'hero',
   title: 'Hero (Mở đầu)',
   type: 'document',
-  icon: ImageIcon,
+  icon: ExpandIcon,
   fields: [
     // Nội dung text
-    defineField({ name: 'kvTitle', title: 'Dòng mở đầu (KV Title)', type: 'string' }),
-    defineField({ name: 'kvHeadline', title: 'Tiêu đề chính', type: 'string' }),
+    defineField({ name: 'kvTitle', title: 'Dòng mở đầu (KV Title)', type: 'string', placeholder: 'FIFA Official Match Ball Carrier' }),
+    defineField({ name: 'kvHeadline', title: 'Tiêu đề chính', type: 'string', placeholder: 'Where Young Dreams Move Forward' }),
     defineField({ name: 'kvSubheadline', title: 'Tiêu đề phụ', type: 'text' }),
     defineField({ name: 'introShort', title: 'Câu mở đầu đoạn giới thiệu', type: 'string' }),
     defineField({

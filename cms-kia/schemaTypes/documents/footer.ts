@@ -1,5 +1,8 @@
 import { defineArrayMember, defineField, defineType } from 'sanity'
-import { PanelLeftIcon } from '@sanity/icons/PanelLeft'
+import { ThListIcon } from '@sanity/icons/ThList'
+import { ImageIcon } from '@sanity/icons/Image'
+import { FolderIcon } from '@sanity/icons/Folder'
+import { LinkIcon } from '@sanity/icons/Link'
 import { withAspectRatioWarning } from '../shared/imageAspectRatio'
 
 // Icon mạng xã hội, nút "Family Site"/"Change Region", link điều khoản/chính
@@ -9,9 +12,9 @@ export const footer = defineType({
   name: 'footer',
   title: 'Footer',
   type: 'document',
-  icon: PanelLeftIcon,
+  icon: ThListIcon,
   fields: [
-    defineField({ name: 'stayInspiredHeading', title: 'Tiêu đề khối "Stay Inspired"', type: 'string' }),
+    defineField({ name: 'stayInspiredHeading', title: 'Tiêu đề khối "Stay Inspired"', type: 'string', placeholder: 'Stay Inspired' }),
     defineField({
       name: 'stayInspiredCards',
       title: 'Card "Stay Inspired"',
@@ -21,6 +24,7 @@ export const footer = defineType({
         defineArrayMember({
           type: 'object',
           name: 'stayInspiredCard',
+          icon: ImageIcon,
           fields: [
             defineField({
               name: 'image',
@@ -46,6 +50,7 @@ export const footer = defineType({
         defineArrayMember({
           type: 'object',
           name: 'menuColumn',
+          icon: FolderIcon,
           fields: [
             defineField({ name: 'title', title: 'Tên cột', type: 'string', validation: (rule) => rule.required() }),
             defineField({
@@ -56,6 +61,7 @@ export const footer = defineType({
                 defineArrayMember({
                   type: 'object',
                   name: 'menuLink',
+                  icon: LinkIcon,
                   fields: [
                     defineField({ name: 'label', title: 'Tên hiển thị', type: 'string', validation: (rule) => rule.required() }),
                     defineField({ name: 'href', title: 'Đường dẫn', type: 'string', validation: (rule) => rule.required() }),

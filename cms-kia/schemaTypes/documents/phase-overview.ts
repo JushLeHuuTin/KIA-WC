@@ -2,6 +2,7 @@ import { defineArrayMember, defineField, defineType } from 'sanity'
 import { ThLargeIcon } from '@sanity/icons/ThLarge'
 import { ImageIcon } from '@sanity/icons/Image'
 import { TextIcon } from '@sanity/icons/Text'
+import { TagIcon } from '@sanity/icons/Tag'
 import { withAspectRatioWarning } from '../shared/imageAspectRatio'
 
 export const phaseOverview = defineType({
@@ -26,6 +27,7 @@ export const phaseOverview = defineType({
         defineArrayMember({
           type: 'object',
           name: 'phase',
+          icon: TagIcon,
           groups: [
             { name: 'content', title: 'Nội dung', icon: TextIcon, default: true },
             { name: 'media', title: 'Hình ảnh', icon: ImageIcon },

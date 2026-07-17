@@ -26,7 +26,7 @@ export function withAspectRatioWarning<R extends CustomizableRule>(
   expectedRatio: number,
   label: string,
   tolerance = 0.08,
-) {
+): R {
   return rule
     .custom(async (image, context) => {
       const ref = image?.asset?._ref
@@ -46,5 +46,5 @@ export function withAspectRatioWarning<R extends CustomizableRule>(
       }
       return true
     })
-    .warning()
+    .warning() as R
 }
