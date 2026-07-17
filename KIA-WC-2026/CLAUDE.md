@@ -30,6 +30,16 @@ assets is real YouTube video IDs — every video embed uses a placeholder ID and
 `// TODO: replace videoId`. The Kia brand font ("Kia Signature") is also not in the provided
 assets; text currently falls back to the system font stack.
 
+**Before building or editing any section, load the `ombc-interaction-guide` skill.** It has
+the full PDF rule text (PC rules 1–11, MW rules 1–5) already transcribed, plus a table mapping
+each rule number to its Figma frame name, asset folder, and component file — built up the hard
+way over several sessions (Figma frame names are unreliable for figuring out page order; asset
+folder numbers are the reliable anchor). It also documents gotchas specific to this client's
+files (e.g. Figma's dot-indicator previews default to 5 dots regardless of real item count —
+always count real files in the asset folder instead) and the PowerShell crop recipe for reading
+`00_Section Name.png` (11324×13547px, exceeds the image-read size limit) when the Figma MCP
+server is rate-limited, which happens often on the Starter plan.
+
 ## Commands
 
 - `npm run dev` — start the Vite dev server (default port 5173; auto-increments if busy)

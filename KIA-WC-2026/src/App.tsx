@@ -1,10 +1,13 @@
 import Header from './components/layout/Header'
+import Footer from './components/layout/Footer'
 import Hero from './components/sections/Hero'
 import MainFilmCarousel from './components/sections/MainFilmCarousel'
 import PhaseOverview from './components/sections/PhaseOverview'
 import PhaseDetails from './components/sections/PhaseDetails'
 import WatchMoreSection from './components/sections/WatchMoreSection'
 import ExperienceCarousel from './components/sections/ExperienceCarousel'
+import ConnectStoreSection from './components/sections/ConnectStoreSection'
+import OutroSection from './components/sections/OutroSection'
 function App() {
   return (
     <>
@@ -16,10 +19,10 @@ function App() {
         <PhaseDetails />
         <WatchMoreSection />
         <ExperienceCarousel />
-        <section className="flex h-screen items-center justify-center bg-neutral-900 text-white">
-          Next section coming soon
-        </section>
+        <ConnectStoreSection />
+        <OutroSection />
       </main>
+      <Footer />
     </>
   )
 }

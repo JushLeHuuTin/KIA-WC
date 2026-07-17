@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, type PointerEvent } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useIsDesktop } from '../../hooks/useMediaQuery'
 import { experiences } from './data'
@@ -15,6 +15,33 @@ const LOOPED = Array.from({ length: REPEAT_COUNT }, (_, copy) =>
   experiences.map((item, i) => ({ ...item, key: `${i}-${copy}` })),
 ).flat()
 
+// Kéo trái/phải để chuyển slide (đúng rule PDF mục 9). Dùng Pointer Events thủ công
+// thay vì `drag` prop của Motion -- tránh lặp lại các bug đã gặp với thư viện này
+// trong dự án (xem MainFilmCarousel.tsx, PhaseDetails.tsx). Không cần theo dõi vị trí
+// theo thời gian thực khi kéo, chỉ cần phát hiện hướng vuốt lúc thả tay.
+const SWIPE_THRESHOLD = 40
+
+function useSwipe(onSwipe: (direction: 1 | -1) => void) {
+  const startX = useRef<number | null>(null)
+
+  return {
+    onPointerDown: (e: PointerEvent) => {
+      startX.current = e.clientX
+    },
+    onPointerUp: (e: PointerEvent) => {
+      if (startX.current === null) return
+      const deltaX = e.clientX - startX.current
+      startX.current = null
+      if (Math.abs(deltaX) > SWIPE_THRESHOLD) {
+        onSwipe(deltaX < 0 ? 1 : -1)
+      }
+    },
+    onPointerLeave: () => {
+      startX.current = null
+    },
+  }
+}
+
 function DesktopVersion() {
   const [activeIndex, setActiveIndex] = useState(0)
   const active = experiences[activeIndex]
@@ -22,6 +49,7 @@ function DesktopVersion() {
   const goto = (delta: number) => {
     setActiveIndex((prev) => (prev + delta + experiences.length) % experiences.length)
   }
+  const swipeHandlers = useSwipe(goto)
 
   // Thứ tự thumbnail luôn là các item còn lại, bắt đầu ngay sau item đang active
   // (khớp đúng hành vi xoay vòng thấy trong thiết kế Figma).
@@ -50,17 +78,18 @@ function DesktopVersion() {
         </motion.div>
 
         <div className="mt-8 grid grid-cols-1 gap-6 lg:mt-12 lg:grid-cols-2">
-          <button
-            type="button"
-            aria-label={`Play ${active.title}`}
-            onClick={() => goto(1)}
-            className="relative aspect-[4/3] w-full overflow-hidden rounded-xl lg:aspect-auto lg:h-[420px]"
+          <div
+            {...swipeHandlers}
+            role="img"
+            aria-label={active.title}
+            className="relative aspect-[4/3] w-full touch-pan-y select-none overflow-hidden rounded-xl lg:aspect-auto lg:h-[420px]"
           >
             <AnimatePresence mode="wait">
               <motion.img
                 key={activeIndex}
                 src={active.pc}
                 alt={active.title}
+                draggable={false}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -68,20 +97,31 @@ function DesktopVersion() {
                 className="absolute inset-0 size-full object-cover"
               />
             </AnimatePresence>
-          </button>
+          </div>
 
           <div className="flex flex-col gap-6 justify-between">
             <div className="grid grid-cols-3 gap-3">
-              {thumbnails.map(({ item, i }) => (
-                <button
-                  key={item.title}
-                  type="button"
-                  onClick={() => setActiveIndex(i)}
-                  aria-label={`Show ${item.title}`}
-                  className="relative aspect-square overflow-hidden rounded-lg"
-                >
-                  <img src={item.thumb} alt={item.title} className="size-full object-cover" />
-                </button>
+              {/* 3 khung cố định theo vị trí (key = slot, không đổi) -- chỉ nội dung
+                  ảnh bên trong crossfade khi đổi active, tránh unmount/mount đột ngột
+                  và tránh dùng `layout` prop (đã gây lỗi mờ ảnh ở PhaseDetails). */}
+              {thumbnails.map(({ item, i }, slot) => (
+                <div key={slot} className="relative aspect-square overflow-hidden rounded-lg">
+                  <AnimatePresence mode="wait">
+                    <motion.button
+                      key={item.title}
+                      type="button"
+                      onClick={() => setActiveIndex(i)}
+                      aria-label={`Show ${item.title}`}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.3, ease: 'easeInOut' }}
+                      className="absolute inset-0"
+                    >
+                      <img src={item.thumb} alt={item.title} className="size-full object-cover" />
+                    </motion.button>
+                  </AnimatePresence>
+                </div>
               ))}
             </div>
 
@@ -143,6 +183,7 @@ function MobileVersion() {
   const recenterTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   const activeIndex = ((slideIndex % experiences.length) + experiences.length) % experiences.length
   const active = experiences[activeIndex]
+  const swipeHandlers = useSwipe((direction) => goto(direction))
 
   // Cùng kỹ thuật loop thủ công như MainFilmCarousel: sau khi trượt xong, nếu đã
   // trôi ra khỏi 1/3 giữa của mảng lặp, âm thầm nhảy về vị trí tương đương ở giữa
@@ -175,7 +216,8 @@ function MobileVersion() {
 
         <div className="relative mt-8 overflow-hidden rounded-xl">
           <div
-            className={`flex ${noTransition ? '' : 'transition-transform duration-500 ease-out'}`}
+            {...swipeHandlers}
+            className={`flex touch-pan-y select-none ${noTransition ? '' : 'transition-transform duration-500 ease-out'}`}
             style={{ transform: `translateX(-${slideIndex * 100}%)` }}
           >
             {LOOPED.map((item) => (
@@ -183,6 +225,7 @@ function MobileVersion() {
                 key={item.key}
                 src={item.mw}
                 alt={item.title}
+                draggable={false}
                 className="aspect-square w-full shrink-0 object-cover"
               />
             ))}
