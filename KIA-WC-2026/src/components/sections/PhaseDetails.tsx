@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useIsDesktop } from '../../hooks/useMediaQuery'
+import { useSanityData } from '../../hooks/useSanityData'
+import { PHASE_DETAILS_QUERY } from '../../lib/queries'
 import YouTubePlayer from '../ui/YouTubePlayer'
 
 // Gradient nền của từng item trong danh sách -- lấy đúng màu từ Figma
@@ -9,187 +11,250 @@ import YouTubePlayer from '../ui/YouTubePlayer'
 const ITEM_GRADIENT =
   'linear-gradient(210deg, rgba(42,47,50,0.64) 4%, rgba(48,62,72,0.64) 39%, rgba(38,45,49,0.64) 105%)'
 
+// Nội dung mặc định -- dùng khi Sanity chưa có document `phaseDetails` hoặc
+// field nào chưa được nhập (xem quy ước fallback trong CLAUDE.md).
 // TODO: thay videoId placeholder bằng ID YouTube thật khi khách hàng cung cấp.
-const PHASES = [
+const FALLBACK_PHASES = [
   {
-    id: 'phase-1',
+    _key: 'phase-1',
+    anchorId: 'phase-1',
     eyebrow: 'Phase 1: The Calling',
     headline: 'A Call Toward a Dream',
     body: 'French football legend Thierry Henry sets out to build OMBC — the 49th Team of the FIFA World Cup 2026™. Answering his call, football legends from around the world join one by one, as the journey to becoming the 49th Team begins.',
-    bgPc: '/media/phase-detail/pc-1-bg.png',
-    bgMw: '/media/phase-detail/mw-1-bg.png',
-   items: [
-  {
-    title: '49th Team Draw',
-    description:
-      'Through the draw, Thierry Henry unveils the participating countries of the Kia OMBC Cup, alongside the FIFA World Cup 2026™. The ceremony marks the beginning of the 49th Team journey and introduces the nations that will take part in this once-in-a-lifetime experience.',
-    videoId: '4jjOH2FR6-E',
-    pc: '/media/phase-detail/pc-1-item1.jpg',
-    mw: '/media/phase-detail/mw-1-item1.jpg',
+    bgPcUrl: '/media/phase-detail/pc-1-bg.png',
+    bgMwUrl: '/media/phase-detail/mw-1-bg.png',
+    items: [
+      {
+        _key: '1-1',
+        title: '49th Team Draw',
+        description:
+          'Through the draw, Thierry Henry unveils the participating countries of the Kia OMBC Cup, alongside the FIFA World Cup 2026™. The ceremony marks the beginning of the 49th Team journey and introduces the nations that will take part in this once-in-a-lifetime experience.',
+        videoId: '4jjOH2FR6-E',
+        pcImageUrl: '/media/phase-detail/pc-1-item1.jpg',
+        mwImageUrl: '/media/phase-detail/mw-1-item1.jpg',
+      },
+      {
+        _key: '1-2',
+        title: 'Rio Ferdinand Joins',
+        description:
+          'Rio Ferdinand answers Thierry Henry’s call, bringing his experience and leadership to inspire the next generation of the 49th Team. He encourages young players to believe in teamwork, confidence, and dedication throughout the journey.',
+        videoId: 'aqz-KE-bpKQ',
+        pcImageUrl: '/media/phase-detail/pc-1-item2.jpg',
+        mwImageUrl: '/media/phase-detail/mw-1-item2.jpg',
+      },
+      {
+        _key: '1-3',
+        title: 'Jorge Campos Joins',
+        description:
+          'Legendary goalkeeper Jorge Campos joins the journey, encouraging young players to embrace confidence, creativity, and courage. His unique personality reminds every participant that football is about joy as much as competition.',
+        videoId: '3JZ_D3ELwOQ',
+        pcImageUrl: '/media/phase-detail/pc-1-item3.jpg',
+        mwImageUrl: '/media/phase-detail/mw-1-item3.jpg',
+      },
+      {
+        _key: '1-4',
+        title: 'David Villa Joins',
+        description:
+          'David Villa becomes part of the 49th Team, sharing his passion for football and inspiring children to dream beyond limits. His story shows that perseverance and hard work can turn dreams into reality.',
+        videoId: 'ysz5S6PUM-U',
+        pcImageUrl: '/media/phase-detail/pc-1-item4.jpg',
+        mwImageUrl: '/media/phase-detail/mw-1-item4.jpg',
+      },
+      {
+        _key: '1-5',
+        title: 'Ahn Jung-hwan Joins',
+        description:
+          'Ahn Jung-hwan completes the lineup of legends, adding his unique story and international experience. Together, the legends prepare the future OMBCs for an unforgettable adventure.',
+        videoId: 'M7lc1UVf-VE',
+        pcImageUrl: '/media/phase-detail/pc-1-item5.jpg',
+        mwImageUrl: '/media/phase-detail/mw-1-item5.jpg',
+      },
+    ],
   },
   {
-    title: 'Rio Ferdinand Joins',
-    description:
-      'Rio Ferdinand answers Thierry Henry’s call, bringing his experience and leadership to inspire the next generation of the 49th Team. He encourages young players to believe in teamwork, confidence, and dedication throughout the journey.',
-    videoId: 'aqz-KE-bpKQ',
-    pc: '/media/phase-detail/pc-1-item2.jpg',
-    mw: '/media/phase-detail/mw-1-item2.jpg',
-  },
-  {
-    title: 'Jorge Campos Joins',
-    description:
-      'Legendary goalkeeper Jorge Campos joins the journey, encouraging young players to embrace confidence, creativity, and courage. His unique personality reminds every participant that football is about joy as much as competition.',
-    videoId: '3JZ_D3ELwOQ',
-    pc: '/media/phase-detail/pc-1-item3.jpg',
-    mw: '/media/phase-detail/mw-1-item3.jpg',
-  },
-  {
-    title: 'David Villa Joins',
-    description:
-      'David Villa becomes part of the 49th Team, sharing his passion for football and inspiring children to dream beyond limits. His story shows that perseverance and hard work can turn dreams into reality.',
-    videoId: 'ysz5S6PUM-U',
-    pc: '/media/phase-detail/pc-1-item4.jpg',
-    mw: '/media/phase-detail/mw-1-item4.jpg',
-  },
-  {
-    title: 'Ahn Jung-hwan Joins',
-    description:
-      'Ahn Jung-hwan completes the lineup of legends, adding his unique story and international experience. Together, the legends prepare the future OMBCs for an unforgettable adventure.',
-    videoId: 'M7lc1UVf-VE',
-    pc: '/media/phase-detail/pc-1-item5.jpg',
-    mw: '/media/phase-detail/mw-1-item5.jpg',
-  },
-]
-  },
-  {
-    id: 'phase-2',
+    _key: 'phase-2',
+    anchorId: 'phase-2',
     eyebrow: 'Phase 2: Local Audition',
     headline: 'Chosen by Legends',
     body: 'Across 10 countries around the world, legends and coaches set out to find the children who would join the OMBC journey. What mattered most went beyond skill. Children who embody five values — Passion, Courage, Resilience, Joy, and Inspiration — are chosen as the new faces of the 49th Team.',
-    bgPc: '/media/phase-detail/pc-2-bg.png',
-    bgMw: '/media/phase-detail/mw-2-bg.png',
+    bgPcUrl: '/media/phase-detail/pc-2-bg.png',
+    bgMwUrl: '/media/phase-detail/mw-2-bg.png',
     items: [
       {
+        _key: '2-1',
         title: 'Manifesto',
         description:
           'Thierry Henry, leader of the 49th Team, introduces the Official Match Ball Carriers — the 49th to join the FIFA World Cup™ — and shares their stories with the world. Witness their journey to becoming OMBCs.',
         videoId: '',
-         pc: '/media/phase-detail/pc-2-item1.jpg',
-        mw: '/media/phase-detail/mw-2-item1.jpg',
+        pcImageUrl: '/media/phase-detail/pc-2-item1.jpg',
+        mwImageUrl: '/media/phase-detail/mw-2-item1.jpg',
       },
       {
+        _key: '2-2',
         title: 'The Call Up',
         description:
           'Young football fans from around the world answer the call, taking their first step toward becoming members of the 49th Team.',
         videoId: '',
-         pc: '/media/phase-detail/pc-2-item2.jpg',
-        mw: '/media/phase-detail/mw-2-item2.jpg',
+        pcImageUrl: '/media/phase-detail/pc-2-item2.jpg',
+        mwImageUrl: '/media/phase-detail/mw-2-item2.jpg',
       },
       {
+        _key: '2-3',
         title: 'The Selection',
         description:
           'Legends and coaches carefully select children who demonstrate not only football talent but also the five core values of the program.',
         videoId: '',
-         pc: '/media/phase-detail/pc-2-item3.jpg',
-        mw: '/media/phase-detail/mw-2-item3.jpg',
+        pcImageUrl: '/media/phase-detail/pc-2-item3.jpg',
+        mwImageUrl: '/media/phase-detail/mw-2-item3.jpg',
       },
       {
+        _key: '2-4',
         title: 'Ways of the Team',
         description:
           'The selected children learn the mindset, values, and spirit that define the 49th Team before taking the next step together.',
         videoId: '',
-         pc: '/media/phase-detail/pc-2-item4.jpg',
-        mw: '/media/phase-detail/mw-2-item4.jpg',
+        pcImageUrl: '/media/phase-detail/pc-2-item4.jpg',
+        mwImageUrl: '/media/phase-detail/mw-2-item4.jpg',
       },
       {
+        _key: '2-5',
         title: 'Squad Reveal',
         description:
           'The final squad of Official Match Ball Carriers is revealed, introducing the young players who will represent the 49th Team.',
         videoId: '',
-         pc: '/media/phase-detail/pc-2-item5.jpg',
-        mw: '/media/phase-detail/mw-2-item5.jpg',
+        pcImageUrl: '/media/phase-detail/pc-2-item5.jpg',
+        mwImageUrl: '/media/phase-detail/mw-2-item5.jpg',
       },
     ],
   },
   {
-    id: 'phase-3',
+    _key: 'phase-3',
+    anchorId: 'phase-3',
     eyebrow: 'Phase 3: Kia OMBC Cup 2026™',
     headline: 'Becoming One Team',
     body: 'For the first time, the OMBCs selected from each country come together in Los Angeles. The Kia OMBC Cup 2026™ is more than just a tournament. Under the guidance of legends, the children move beyond competition to understand one another and grow together — becoming the true 49th Team, ready to step onto the FIFA World Cup 2026™ stage.',
-    bgPc: '/media/phase-detail/pc-3-bg.png',
-    bgMw: '/media/phase-detail/mw-3-bg.png',
+    bgPcUrl: '/media/phase-detail/pc-3-bg.png',
+    bgMwUrl: '/media/phase-detail/mw-3-bg.png',
     items: [
       {
+        _key: '3-1',
         title: 'One Team',
         description:
           'The OMBCs selected from each country gather in Los Angeles for the first time to take part in the Kia OMBC Cup 2026™. Now, their second journey begins.',
         videoId: '',
-         pc: '/media/phase-detail/pc-3-item1.jpg',
-        mw: '/media/phase-detail/mw-3-item1.jpg',
+        pcImageUrl: '/media/phase-detail/pc-3-item1.jpg',
+        mwImageUrl: '/media/phase-detail/mw-3-item1.jpg',
       },
       {
+        _key: '3-2',
         title: 'Boot Camp',
         description:
           'Through intensive training sessions and team-building activities, the OMBCs grow together under the mentorship of football legends.',
         videoId: '',
-         pc: '/media/phase-detail/pc-3-item2.jpg',
-        mw: '/media/phase-detail/mw-3-item2.jpg',
+        pcImageUrl: '/media/phase-detail/pc-3-item2.jpg',
+        mwImageUrl: '/media/phase-detail/mw-3-item2.jpg',
       },
       {
+        _key: '3-3',
         title: '49th Team Photo',
         description:
           'The newly united squad captures its official team photo, celebrating the friendships and shared journey that define the 49th Team.',
         videoId: '',
-         pc: '/media/phase-detail/pc-3-item3.jpg',
-        mw: '/media/phase-detail/mw-3-item3.jpg',
+        pcImageUrl: '/media/phase-detail/pc-3-item3.jpg',
+        mwImageUrl: '/media/phase-detail/mw-3-item3.jpg',
       },
       {
+        _key: '3-4',
         title: 'OMBC Cup Highlights',
         description:
           'Relive the unforgettable moments, inspiring goals, and unforgettable teamwork from the Kia OMBC Cup 2026™.',
         videoId: '',
-         pc: '/media/phase-detail/pc-3-item3.jpg',
-        mw: '/media/phase-detail/mw-3-item3.jpg',
+        pcImageUrl: '/media/phase-detail/pc-3-item3.jpg',
+        mwImageUrl: '/media/phase-detail/mw-3-item3.jpg',
       },
     ],
   },
   {
-    id: 'phase-4',
+    _key: 'phase-4',
+    anchorId: 'phase-4',
     eyebrow: 'Phase 4: FIFA World Cup 2026™',
     headline: 'The 49th Team Stepping onto the FIFA World Cup™ Stage',
     body: 'Now, the children step onto the FIFA World Cup 2026™ stage. As they enter the pitch carrying the official match ball, they become part of the opening moment of the match. And even after the final whistle, the journey of challenge and growth that began with the 49th Team continues on.',
-    bgPc: '/media/phase-detail/pc-4-bg.png',
-    bgMw: '/media/phase-detail/mw-4-bg.png',
+    bgPcUrl: '/media/phase-detail/pc-4-bg.png',
+    bgMwUrl: '/media/phase-detail/mw-4-bg.png',
     items: [
       {
+        _key: '4-1',
         title: "Class of '26",
         description:
           'The children have long dreamed of stepping onto the FIFA World Cup™ stage — and now, as Official Match Ball Carriers, they finally take their place on that stage.',
         videoId: '',
-         pc: '/media/phase-detail/pc-4-item1.jpg',
-        mw: '/media/phase-detail/mw-4-item1.jpg',
+        pcImageUrl: '/media/phase-detail/pc-4-item1.jpg',
+        mwImageUrl: '/media/phase-detail/mw-4-item1.jpg',
       },
       {
+        _key: '4-2',
         title: 'Legend Verdict',
         description:
           'Football legends reflect on the OMBCs’ remarkable journey, celebrating their growth, determination, and unforgettable achievements.',
         videoId: '',
-         pc: '/media/phase-detail/pc-4-item2.jpg',
-        mw: '/media/phase-detail/mw-4-item2.jpg',
+        pcImageUrl: '/media/phase-detail/pc-4-item2.jpg',
+        mwImageUrl: '/media/phase-detail/mw-4-item2.jpg',
       },
       {
+        _key: '4-3',
         title: 'Forever 49th Team',
         description:
           'Although the tournament ends, the friendships, values, and memories of the 49th Team continue to inspire every child for years to come.',
         videoId: '',
-         pc: '/media/phase-detail/pc-4-item3.jpg',
-        mw: '/media/phase-detail/mw-4-item3.jpg',
+        pcImageUrl: '/media/phase-detail/pc-4-item3.jpg',
+        mwImageUrl: '/media/phase-detail/mw-4-item3.jpg',
       },
     ],
   },
 ]
 
-function PhaseDetailCard({ phase }: { phase: (typeof PHASES)[number] }) {
+interface PhaseDetailsData {
+  phases:
+    | {
+        _key: string
+        anchorId: string
+        eyebrow: string
+        headline: string
+        body: string | null
+        bgPcUrl: string | null
+        bgMwUrl: string | null
+        items: {
+          _key: string
+          title: string
+          description: string | null
+          videoId: string | null
+          pcImageUrl: string | null
+          mwImageUrl: string | null
+        }[]
+      }[]
+    | null
+}
+
+type PhaseDetail = {
+  _key: string
+  anchorId: string
+  eyebrow: string
+  headline: string
+  body: string | null
+  bgPcUrl: string | null
+  bgMwUrl: string | null
+  items: {
+    _key: string
+    title: string
+    description: string | null
+    videoId: string | null
+    pcImageUrl: string | null
+    mwImageUrl: string | null
+  }[]
+}
+
+function PhaseDetailCard({ phase }: { phase: PhaseDetail }) {
   const isDesktop = useIsDesktop()
   const [activeItem, setActiveItem] = useState(0)
 
@@ -203,12 +268,14 @@ function PhaseDetailCard({ phase }: { phase: (typeof PHASES)[number] }) {
 
   return (
    <section
-  id={phase.id}
+  id={phase.anchorId}
   className=" isolate relative mx-2 my-3 scroll-mt-24 overflow-hidden rounded-2xl border border-white/10 bg-[#181C1F]/95 backdrop-blur-sm shadow-[0_40px_120px_rgba(0,0,0,0.55)] px-6 py-10 lg:mx-5 lg:my-4 lg:scroll-mt-28 lg:px-20 lg:py-[60px]">
       <div className="absolute inset-0 -z-1 pointer-events-none">
-        <img src={isDesktop ? phase.bgPc : phase.bgMw} alt=""
-          className="size-full object-cover"
-        />
+        {(isDesktop ? phase.bgPcUrl : phase.bgMwUrl) && (
+          <img src={(isDesktop ? phase.bgPcUrl : phase.bgMwUrl) ?? undefined} alt=""
+            className="size-full object-cover"
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-br from-[#2f343b]/70 via-[#3b4148]/45 to-[#1f2428]/20" />
       </div>
 
@@ -257,7 +324,11 @@ function PhaseDetailCard({ phase }: { phase: (typeof PHASES)[number] }) {
               transition={{ duration: 0.4, ease: 'easeInOut' }}
               className="absolute inset-0"
             >
-              <YouTubePlayer videoId={active.videoId} title={active.title} thumbnail={isDesktop ? active.pc : active.mw} />
+              <YouTubePlayer
+                videoId={active.videoId ?? ''}
+                title={active.title}
+                thumbnail={(isDesktop ? active.pcImageUrl : active.mwImageUrl) ?? undefined}
+              />
             </motion.div>
           </AnimatePresence>
 
@@ -277,7 +348,7 @@ function PhaseDetailCard({ phase }: { phase: (typeof PHASES)[number] }) {
               const isActive = i === activeItem
               return (
                 <button
-                  key={item.title}
+                  key={item._key}
                   type="button"
                   onClick={() => setActiveItem(i)}
                   style={{ backgroundImage: ITEM_GRADIENT }}
@@ -364,10 +435,13 @@ function PhaseDetailCard({ phase }: { phase: (typeof PHASES)[number] }) {
 }
 
 export default function PhaseDetails() {
+  const { data } = useSanityData<PhaseDetailsData>(PHASE_DETAILS_QUERY)
+  const phases = data?.phases?.length ? data.phases : FALLBACK_PHASES
+
   return (
     <div className="bg-black">
-      {PHASES.map((phase) => (
-        <PhaseDetailCard key={phase.id} phase={phase} />
+      {phases.map((phase) => (
+        <PhaseDetailCard key={phase._key} phase={phase} />
       ))}
     </div>
   )
