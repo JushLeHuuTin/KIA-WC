@@ -22,9 +22,12 @@ export default function OutroSection() {
   const isDesktop = useIsDesktop()
 
   return (
- <section className="relative z-10 -top-40 flex min-h-screen items-center overflow-hidden bg-black 
-  before:absolute before:top-0 before:left-0 before:z-10 before:h-40 before:w-full before:bg-gradient-to-b before:from-black before:to-transparent 
-  after:absolute after:bottom-0 after:left-0 after:z-10 after:h-40 after:w-full after:bg-gradient-to-t after:from-black after:to-transparent">
+    <section className="relative z-40 -top-40 flex min-h-screen items-center overflow-hidden bg-black">
+      {/* Gradient phía trên */}
+      <div className="absolute top-0 left-0 z-10 h-140 w-full bg-gradient-to-b from-black to-transparent" />
+
+      {/* Gradient phía dưới */}
+      <div className="absolute bottom-0 left-0 z-10 h-40 w-full bg-gradient-to-t from-black to-transparent" />
       <div className="relative w-full overflow-hidden rounded-2xl">
         <img
           src={isDesktop ? '/media/outro/pc.jpg' : '/media/outro/mw.jpg'}
@@ -33,7 +36,7 @@ export default function OutroSection() {
         />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
 
-        <div className="absolute left-6 top-1/2 flex w-[calc(100%-48px)] -translate-y-1/2 flex-col gap-5 lg:left-20 lg:w-[500px]">
+        <div className="absolute left-6 lg-top-20 top-50 flex w-[calc(100%-48px)] flex-col gap-5 lg:left-20 lg:top-1/2 lg:w-[500px] lg:-translate-y-1/2">
           {/* Copy xuất hiện tuần tự từng đoạn, fade-in (đúng rule PDF mục 11). */}
           {PARAGRAPHS.map((p, i) => (
             <motion.p

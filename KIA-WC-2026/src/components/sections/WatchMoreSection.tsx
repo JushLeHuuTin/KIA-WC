@@ -134,7 +134,7 @@ function MobileVersion() {
       ref={wrapperRef}
       className="relative h-[220vh]"
     >
-      <div className="sticky top-0 flex h-screen items-end overflow-hidden pb-16">
+      <div className="sticky top-0 flex h-screen items-center overflow-hidden">
         <img
           src="/media/playlist/mw.jpg"
           alt=""
@@ -142,7 +142,7 @@ function MobileVersion() {
         />
 
         <motion.div
-          className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"
+          className="absolute inset-0 bg-black"
           style={{ opacity: dimOpacity }}
         />
 

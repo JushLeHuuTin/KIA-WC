@@ -10,7 +10,18 @@ const INTRO_PARAGRAPH = [
   'the start of the match. Each child is personally selected and invited by Kia — future stars of the game.',
   " In that defining moment, they step into the very heart of the world's biggest stage.",
 ]
-
+interface HeroProps {
+  data: {
+    kvTitle: string;
+    kvHeadline: string;
+    kvSubheadline: string;
+    introShort: string;
+    introParagraphs: string[];
+    pcVideoUrl: string; // Lấy từ Sanity asset
+    mobileVideoUrl: string;
+    logoUrl: string;
+  }
+}
 export default function Hero() {
   const isDesktop = useIsDesktop()
   const wrapperRef = useRef<HTMLDivElement>(null)

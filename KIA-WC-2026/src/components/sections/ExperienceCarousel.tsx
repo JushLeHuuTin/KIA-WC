@@ -237,6 +237,8 @@ function MobileVersion() {
           <p className="text-[13px] leading-6 text-[#303e48]">{active.description}</p>
         </div>
 
+        {/* Mobile chỉ điều hướng bằng vuốt trái/phải + dots -- không có nút mũi tên
+            (khác desktop, nơi nút chỉ hiện khi hover, vốn không áp dụng cho mobile). */}
         <div className="mt-6 flex items-center justify-center gap-1.5">
           {experiences.map((item, i) => (
             <span
@@ -245,25 +247,6 @@ function MobileVersion() {
                 }`}
             />
           ))}
-        </div>
-
-        <div className="mt-4 flex items-center justify-center gap-4">
-          <button
-            type="button"
-            aria-label="Previous"
-            onClick={() => goto(-1)}
-            className="flex size-10 items-center justify-center rounded-full border border-black/10 bg-white shadow"
-          >
-            <img src="/icons/ic-arrow-back.svg" alt="" className="size-4 invert" />
-          </button>
-          <button
-            type="button"
-            aria-label="Next"
-            onClick={() => goto(1)}
-            className="flex size-10 items-center justify-center rounded-full border border-black/10 bg-white shadow"
-          >
-            <img src="/icons/ic-arrow-forward.svg" alt="" className="size-4 invert" />
-          </button>
         </div>
       </div>
     </section>
