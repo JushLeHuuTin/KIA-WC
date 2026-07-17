@@ -24,7 +24,7 @@ export default function Header() {
 
   return (
     <header className="fixed top-0 left-0 z-50 flex w-full items-center justify-between px-6 py-5 lg:px-20 lg:py-6">
-      <img src={logoUrl} alt="Kia" className="h-6 w-auto lg:h-8" />
+      <img src={logoUrl} alt="Kia" className="h-4 w-16 object-contain lg:h-6 lg:w-24" />
 
       <nav className="hidden items-center lg:flex">
         {navItems.map((item) => (

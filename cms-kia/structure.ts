@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-import type { DefaultDocumentNodeResolver, StructureBuilder, StructureResolver } from 'sanity/structure'
-import { createPagePreview } from './components/PagePreview'
-=======
 import type { ComponentType } from 'react'
 import type { DefaultDocumentNodeResolver, StructureBuilder, StructureResolver } from 'sanity/structure'
 import { createPagePreview } from './components/PagePreview'
@@ -16,7 +12,6 @@ import { ImagesIcon } from '@sanity/icons/Images'
 import { LaunchIcon } from '@sanity/icons/Launch'
 import { RocketIcon } from '@sanity/icons/Rocket'
 import { ThListIcon } from '@sanity/icons/ThList'
->>>>>>> feature/setup-cms
 
 // Toàn bộ site là 1 trang landing duy nhất -- mỗi section (hero, main film
 // carousel, phase overview, ...) chỉ có đúng 1 bản ghi (singleton), không phải
@@ -30,12 +25,6 @@ const PREVIEW_ANCHORS: Partial<Record<(typeof SINGLETONS)[number], string>> = {
   phaseDetails: 'phase-1',
 }
 
-<<<<<<< HEAD
-function createSingleton(S: StructureBuilder, typeName: string, title: string) {
-  return S.listItem()
-    .title(title)
-    .id(typeName)
-=======
 // S.listItem() KHÔNG tự lấy icon khai báo trong defineType({icon: ...}) của
 // schema -- phải gán tay lại ở đây, nếu không toàn bộ sidebar chỉ hiện icon
 // folder mặc định giống nhau. Icon phải khớp đúng icon đã đặt cho document đó
@@ -59,7 +48,6 @@ function createSingleton(S: StructureBuilder, typeName: (typeof SINGLETONS)[numb
     .title(title)
     .id(typeName)
     .icon(SINGLETON_ICONS[typeName])
->>>>>>> feature/setup-cms
     .child(S.document().schemaType(typeName).documentId(typeName).title(title))
 }
 

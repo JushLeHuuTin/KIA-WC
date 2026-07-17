@@ -40,7 +40,7 @@ export default function OutroSection() {
 
   return (
 
-    <section className="relative z-40 flex items-center overflow-hidden bg-black">
+    <section className="relative z-40 -top-40 flex items-center overflow-hidden bg-black">
       {/* Gradient phía trên */}
       <div className="absolute top-0 left-0 z-10 h-140 w-full bg-gradient-to-b from-black to-transparent" />
 

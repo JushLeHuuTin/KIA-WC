@@ -99,8 +99,6 @@ cỡ), `phaseOverview` (ảnh card), `phaseDetails` → `items` (thumbnail video
 Watch More/Connect Store/Outro, poster Hero) không cần validate vì
 `object-cover` ở đó vốn tự do theo ảnh gốc.
 
-<<<<<<< HEAD
-=======
 ## 8. Rà soát lại icon cho hợp lý ngữ nghĩa hơn
 
 Icon ban đầu chọn khá vội (nhiều chỗ tái dùng `ImageIcon`/`TextIcon` chung
@@ -140,7 +138,6 @@ sửa bằng cách gán tay `.icon(...)` cho từng `S.listItem()` qua map
 trong schema, phải đổi cả icon tương ứng trong `SINGLETON_ICONS` (structure.ts),
 2 nơi này không tự đồng bộ với nhau.**
 
->>>>>>> feature/setup-cms
 ## Việc còn có thể làm thêm (chưa làm, nếu cần nâng cấp tiếp)
 
 - Draft-preview thời gian thực (Visual Editing/Presentation Tool đầy đủ) —

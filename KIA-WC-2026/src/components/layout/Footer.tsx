@@ -105,7 +105,7 @@ export default function Footer() {
       {/* Site footer chính */}
       <div className="mt-2 rounded-2xl  px-6 pb-8 pt-10 lg:mt-4 lg:px-20 lg:pb-12 lg:pt-[60px]">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
-          <img src={logoUrl} alt="Kia" className="h-6 w-auto lg:h-8" />
+          <img src={logoUrl} alt="Kia" className="h-4 w-16 object-contain lg:h-6 lg:w-24" />
           <div className="flex flex-col gap-8 lg:flex-row lg:gap-[60px]">
             {menuColumns.map((col) => (
               <div key={col._key} className="flex flex-col gap-4 lg:w-[240px]">
