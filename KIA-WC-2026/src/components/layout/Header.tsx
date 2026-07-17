@@ -45,10 +45,10 @@ export default function Header() {
           <span className="font-bold leading-[22px]">EN</span>
         </div>
         <button type="button" aria-label="Search">
-          <img src="/icons/ic-search.svg" alt="" className="size-6" />
+          <img src="/icons/ic-search.svg" alt="" className="size-5" />
         </button>
         <button type="button" aria-label="Menu" className="lg:hidden">
-          <img src="/icons/ic-menu.svg" alt="" className="size-6" />
+          <img src="/icons/ic-menu.svg" alt="" className="size-5" />
         </button>
       </div>
     </header>

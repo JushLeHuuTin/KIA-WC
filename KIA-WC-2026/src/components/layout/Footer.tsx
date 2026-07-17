@@ -77,7 +77,7 @@ export default function Footer() {
   const disclaimer2 = data?.disclaimer2 ?? FALLBACK_DISCLAIMER_2
 
   return (
-    <footer className="bg-black px-2 pb-2 pt-3 lg:px-5 lg:pb-5 lg:pt-4 relative -top-40">
+    <footer className="bg-black px-2 pb-2 pt-3 lg:px-5 lg:pb-5 lg:pt-4 relative">
       {/* Stay Inspired */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
