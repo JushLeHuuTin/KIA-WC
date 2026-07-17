@@ -204,27 +204,7 @@ function PhaseDetailCard({ phase }: { phase: (typeof PHASES)[number] }) {
   return (
    <section
   id={phase.id}
-  className="
-    isolate
-    relative
-    mx-2
-    my-3
-    scroll-mt-24
-    overflow-hidden
-    rounded-2xl
-    border border-white/10
-    bg-[#181C1F]/95
-    backdrop-blur-sm
-    shadow-[0_40px_120px_rgba(0,0,0,0.55)]
-    px-6
-    py-10
-    lg:mx-5
-    lg:my-4
-    lg:scroll-mt-28
-    lg:px-20
-    lg:py-[60px]
-  "
->
+  className=" isolate relative mx-2 my-3 scroll-mt-24 overflow-hidden rounded-2xl border border-white/10 bg-[#181C1F]/95 backdrop-blur-sm shadow-[0_40px_120px_rgba(0,0,0,0.55)] px-6 py-10 lg:mx-5 lg:my-4 lg:scroll-mt-28 lg:px-20 lg:py-[60px]">
       <div className="absolute inset-0 -z-1 pointer-events-none">
         <img src={isDesktop ? phase.bgPc : phase.bgMw} alt=""
           className="size-full object-cover"
