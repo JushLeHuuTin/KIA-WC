@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 type YouTubePlayerProps = {
   videoId: string
-  thumbnail: string
+  thumbnail?: string
   title: string
   className?: string
   thumbnailClassName?: string
@@ -47,12 +47,18 @@ export default function YouTubePlayer({
       disabled={!showPlayButton}
       className={`group relative block size-full overflow-hidden ${className}`}
     >
-      <img
-        src={thumbnail}
-        alt={title}
-        className={`size-full object-cover ${disableTransition ? '' : 'transition-[filter,transform] duration-700 ease-out'} ${thumbnailClassName}`}
-        draggable={false}
-      />
+      {thumbnail ? (
+        <img
+          src={thumbnail}
+          alt={title}
+          className={`size-full object-cover ${disableTransition ? '' : 'transition-[filter,transform] duration-700 ease-out'} ${thumbnailClassName}`}
+          draggable={false}
+        />
+      ) : (
+        // Chưa upload ảnh thumbnail trong CMS -- hiện khối màu trung tính thay vì
+        // <img src=""> (browser cảnh báo và có thể tải lại cả trang khi src rỗng).
+        <div className={`size-full bg-[#1c1f21] ${thumbnailClassName}`} />
+      )}
       {showPlayButton && (
         <span
           className={`absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-[#636d74] bg-[rgba(5,20,31,0.6)] ${buttonSizeClass}`}

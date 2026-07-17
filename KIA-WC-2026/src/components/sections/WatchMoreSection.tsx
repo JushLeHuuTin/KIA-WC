@@ -6,15 +6,31 @@ import {
   useScroll,
 } from 'motion/react'
 import { useIsDesktop } from '../../hooks/useMediaQuery'
+import { useSanityData } from '../../hooks/useSanityData'
+import { WATCH_MORE_QUERY } from '../../lib/queries'
 import { remap } from '../../lib/scroll'
 
-const BODY =
-  'The journey of the 49th Team does not end with the opening of the match. As an official partner of the FIFA World Cup 2026™, Kia continues to create more unforgettable moments of the tournament — beginning with OMBC.'
+// Nội dung mặc định -- dùng khi Sanity chưa có document `watchMore` hoặc field
+// nào chưa được nhập (xem quy ước fallback trong CLAUDE.md).
+const FALLBACK = {
+  heading: 'FIFA World Cup 2026™ —\nTogether with OMBC',
+  body: 'The journey of the 49th Team does not end with the opening of the match. As an official partner of the FIFA World Cup 2026™, Kia continues to create more unforgettable moments of the tournament — beginning with OMBC.',
+  buttonTitle: 'Watch more OMBC videos',
+  buttonSubtitle: 'Discover the many stories of the 49th Team — united by passion for football and shared dreams.',
+  buttonHref: '/videos',
+  pcImageUrl: '/media/playlist/pc.jpg',
+  mwImageUrl: '/media/playlist/mw.jpg',
+}
 
-const BUTTON_TITLE = 'Watch more OMBC videos'
-
-const BUTTON_SUBTITLE =
-  'Discover the many stories of the 49th Team — united by passion for football and shared dreams.'
+interface WatchMoreData {
+  heading: string | null
+  body: string | null
+  buttonTitle: string | null
+  buttonSubtitle: string | null
+  buttonHref: string | null
+  pcImageUrl: string | null
+  mwImageUrl: string | null
+}
 
 function ArrowIcon() {
   return (
@@ -30,7 +46,23 @@ function ArrowIcon() {
   )
 }
 
-function Content() {
+// Heading cho phép xuống dòng thủ công trong Sanity (field type "text") --
+// tách theo "\n" và render từng dòng cách nhau bằng <br/>.
+function Heading({ text, className }: { text: string; className: string }) {
+  const lines = text.split('\n')
+  return (
+    <>
+      {lines.map((line, i) => (
+        <span key={line} className={className}>
+          {line}
+          {i < lines.length - 1 && <br />}
+        </span>
+      ))}
+    </>
+  )
+}
+
+function Content({ data }: { data: ReturnType<typeof useWatchMoreContent> }) {
   return (
     <div className="max-w-[430px]">
       <motion.h2
@@ -40,9 +72,7 @@ function Content() {
         transition={{ duration: 0.5 }}
         className="text-[32px] font-medium leading-[42px] text-white lg:text-[48px] lg:leading-[60px]"
       >
-        FIFA World Cup 2026™ —
-        <br />
-        Together with OMBC
+        <Heading text={data.heading} className="" />
       </motion.h2>
 
       <motion.p
@@ -55,11 +85,11 @@ function Content() {
         }}
         className="mt-6 text-[14px] leading-7 text-white/70 lg:text-[16px]"
       >
-        {BODY}
+        {data.body}
       </motion.p>
 
       <motion.a
-        href="/videos"
+        href={data.buttonHref}
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
@@ -70,9 +100,9 @@ function Content() {
         className="mt-8 inline-flex items-center gap-3 rounded-[1px] border border-white/25 bg-black/20 px-5 py-4 text-white backdrop-blur-sm transition hover:bg-black/35"
       >
         <div>
-          <p className="text-[15px] font-medium">{BUTTON_TITLE}</p>
+          <p className="text-[15px] font-medium">{data.buttonTitle}</p>
           <p className="mt-1 text-[12px] text-white/60">
-            {BUTTON_SUBTITLE}
+            {data.buttonSubtitle}
           </p>
         </div>
 
@@ -82,24 +112,39 @@ function Content() {
   )
 }
 
+function useWatchMoreContent() {
+  const { data } = useSanityData<WatchMoreData>(WATCH_MORE_QUERY)
+  return {
+    heading: data?.heading ?? FALLBACK.heading,
+    body: data?.body ?? FALLBACK.body,
+    buttonTitle: data?.buttonTitle ?? FALLBACK.buttonTitle,
+    buttonSubtitle: data?.buttonSubtitle ?? FALLBACK.buttonSubtitle,
+    buttonHref: data?.buttonHref ?? FALLBACK.buttonHref,
+    pcImageUrl: data?.pcImageUrl ?? FALLBACK.pcImageUrl,
+    mwImageUrl: data?.mwImageUrl ?? FALLBACK.mwImageUrl,
+  }
+}
+
 function DesktopVersion() {
+  const content = useWatchMoreContent()
   return (
     <section className="relative flex h-screen items-center overflow-hidden">
       <img
-        src="/media/playlist/pc.jpg"
+        src={content.pcImageUrl}
         alt=""
         className="absolute inset-0 size-full object-cover"
       />
 
      <div className="absolute inset-0 bg-gradient-to-b from-black/95 via-transparent to-black/100" />
       <div className="relative z-10 mx-auto flex w-full max-w-[1280px] justify-end px-6 lg:px-10">
-        <Content />
+        <Content data={content} />
       </div>
     </section>
   )
 }
 
 function MobileVersion() {
+  const content = useWatchMoreContent()
   const wrapperRef = useRef<HTMLDivElement>(null)
 
   const { scrollYProgress } = useScroll({
@@ -136,7 +181,7 @@ function MobileVersion() {
     >
       <div className="sticky top-0 flex h-screen items-center overflow-hidden">
         <img
-          src="/media/playlist/mw.jpg"
+          src={content.mwImageUrl}
           alt=""
           className="absolute inset-0 size-full object-cover"
         />
@@ -155,9 +200,7 @@ function MobileVersion() {
             }}
             className="text-[32px] font-medium leading-[42px] text-white"
           >
-            FIFA World Cup 2026™ —
-            <br />
-            Together with OMBC
+            <Heading text={content.heading} className="" />
           </motion.h2>
 
           <motion.p
@@ -167,11 +210,11 @@ function MobileVersion() {
             }}
             className="mt-6 text-[14px] leading-7 text-white/70"
           >
-            {BODY}
+            {content.body}
           </motion.p>
 
           <motion.a
-            href="/videos"
+            href={content.buttonHref}
             style={{
               opacity: buttonOpacity,
               y: buttonY,
@@ -180,11 +223,11 @@ function MobileVersion() {
           >
             <div>
               <p className="text-[15px] font-medium">
-                {BUTTON_TITLE}
+                {content.buttonTitle}
               </p>
 
               <p className="mt-1 text-[12px] text-white/60">
-                {BUTTON_SUBTITLE}
+                {content.buttonSubtitle}
               </p>
             </div>
 

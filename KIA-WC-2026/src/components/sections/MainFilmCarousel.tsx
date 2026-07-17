@@ -5,30 +5,48 @@ import { Navigation } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import { useIsDesktop } from '../../hooks/useMediaQuery'
+import { useSanityData } from '../../hooks/useSanityData'
+import { MAIN_FILM_CAROUSEL_QUERY } from '../../lib/queries'
 import YouTubePlayer from '../ui/YouTubePlayer'
 
-// TODO: swap in the client's real YouTube video IDs for each film.
-const FILMS = [
-  { id: 'the-next-legend', title: 'The Next Legend', videoId: 'F3oRObMMNx8', pc: '/media/cup-main-film/pc-1.jpg', mw: '/media/cup-main-film/mw-1.jpg' },
-  { id: 'master-plan', title: 'Master Plan', videoId: 'F3oRObMMNx8', pc: '/media/cup-main-film/pc-2.jpg', mw: '/media/cup-main-film/mw-2.jpg' },
-  { id: 'deliver-to-inspire', title: 'Deliver to Inspire', videoId: 'dQw4w9WgXcQ', pc: '/media/cup-main-film/pc-3.jpg', mw: '/media/cup-main-film/mw-3.jpg' },
+// Nội dung mặc định -- dùng khi Sanity chưa có document `mainFilmCarousel` hoặc
+// chưa nhập đủ film (xem quy ước fallback trong CLAUDE.md).
+const FALLBACK_FILMS = [
+  { _key: 'the-next-legend', title: 'The Next Legend', videoId: 'F3oRObMMNx8', pcThumbnailUrl: '/media/cup-main-film/pc-1.jpg', mwThumbnailUrl: '/media/cup-main-film/mw-1.jpg' },
+  { _key: 'master-plan', title: 'Master Plan', videoId: 'F3oRObMMNx8', pcThumbnailUrl: '/media/cup-main-film/pc-2.jpg', mwThumbnailUrl: '/media/cup-main-film/mw-2.jpg' },
+  { _key: 'deliver-to-inspire', title: 'Deliver to Inspire', videoId: 'dQw4w9WgXcQ', pcThumbnailUrl: '/media/cup-main-film/pc-3.jpg', mwThumbnailUrl: '/media/cup-main-film/mw-3.jpg' },
 ]
+
+interface MainFilmCarouselData {
+  films:
+    | {
+        _key: string
+        title: string | null
+        videoId: string | null
+        pcThumbnailUrl: string | null
+        mwThumbnailUrl: string | null
+      }[]
+    | null
+}
 
 // Swiper's built-in `loop` mode doesn't duplicate slides reliably in this setup
 // (verified: it freezes after one transition with only 3 slidesPerView="auto"
 // slides), so the infinite loop is faked: repeat the films 3x and silently
 // re-center the track once we drift into the first/last copy.
 const REPEAT_COUNT = 3
-const LOOPED_FILMS = Array.from({ length: REPEAT_COUNT }, (_, copy) =>
-  FILMS.map((film) => ({ ...film, key: `${film.id}-${copy}` })),
-).flat()
-
 const TRANSITION_SPEED = 800
 
 export default function MainFilmCarousel() {
   const isDesktop = useIsDesktop()
   const swiperRef = useRef<SwiperType | null>(null)
   const recenterTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const { data } = useSanityData<MainFilmCarouselData>(MAIN_FILM_CAROUSEL_QUERY)
+  const FILMS = data?.films?.length ? data.films : FALLBACK_FILMS
+  const LOOPED_FILMS = Array.from({ length: REPEAT_COUNT }, (_, copy) =>
+    FILMS.map((film) => ({ ...film, key: `${film._key}-${copy}` })),
+  ).flat()
+
   const [slideIndex, setSlideIndex] = useState(FILMS.length + 1)
   // While true, every slide's scale/opacity/blur transition is switched off so the
   // silent re-center jump (see onSlideChange below) can swap which DOM copy is
@@ -93,9 +111,9 @@ export default function MainFilmCarousel() {
               >
                 <div className="relative size-full overflow-hidden rounded-xl">
                   <YouTubePlayer
-                    videoId={film.videoId}
-                    title={film.title}
-                    thumbnail={isDesktop ? film.pc : film.mw}
+                    videoId={film.videoId ?? ''}
+                    title={film.title ?? ''}
+                    thumbnail={(isDesktop ? film.pcThumbnailUrl : film.mwThumbnailUrl) ?? undefined}
                     playButtonSize={isDesktop ? 'lg' : 'sm'}
                     showPlayButton={isActive}
                     className={isActive ? '' : 'pointer-events-none'}
@@ -134,7 +152,7 @@ export default function MainFilmCarousel() {
       <div className="mt-8 flex flex-col items-center gap-4 lg:mt-10">
         <div className="hidden items-center gap-4 lg:flex">
           {FILMS.map((film, i) => (
-            <div key={film.id} className="flex items-center gap-4">
+            <div key={film._key} className="flex items-center gap-4">
               {i > 0 && <span className="size-[3px] rounded-full bg-white/40" />}
               <span
                 className={`text-[18px] leading-[30px] transition-colors duration-500 ${i === activeFilmIndex ? 'text-white' : 'text-[#4a565e]'}`}
@@ -150,7 +168,7 @@ export default function MainFilmCarousel() {
         <div className="flex items-center gap-1.5 lg:hidden">
           {FILMS.map((film, i) => (
             <span
-              key={film.id}
+              key={film._key}
               className={`rounded-full transition-all duration-500 ${
                 i === activeFilmIndex ? 'size-1.5 bg-white' : 'size-1 bg-[#4a565e]'
               }`}

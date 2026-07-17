@@ -1,31 +1,61 @@
 import { useEffect, useRef } from 'react'
 import { motion, useMotionValue, useMotionValueEvent, useScroll } from 'motion/react'
 import { useIsDesktop } from '../../hooks/useMediaQuery'
+import { useSanityData } from '../../hooks/useSanityData'
 import { remap } from '../../lib/scroll'
+import { HERO_QUERY } from '../../lib/queries'
 
-const INTRO_PARAGRAPH = [
-  'As the world watches, the FIFA World Cup™ begins with OMBC.',
-  'The Official Match Ball Carrier (OMBC) is a program operated exclusively by Kia,',
-  'inviting children onto the pitch to deliver the official match ball to the referee — formally signaling',
-  'the start of the match. Each child is personally selected and invited by Kia — future stars of the game.',
-  " In that defining moment, they step into the very heart of the world's biggest stage.",
-]
-interface HeroProps {
-  data: {
-    kvTitle: string;
-    kvHeadline: string;
-    kvSubheadline: string;
-    introShort: string;
-    introParagraphs: string[];
-    pcVideoUrl: string; // Lấy từ Sanity asset
-    mobileVideoUrl: string;
-    logoUrl: string;
-  }
+// Nội dung mặc định -- dùng khi Sanity chưa có document `hero` hoặc field nào đó
+// chưa được nhập (fallback theo từng field, không phải theo cả document, để có
+// thể điền dần từng phần trong Studio mà không làm vỡ trang).
+const FALLBACK = {
+  kvTitle: 'FIFA Official Match Ball Carrier',
+  kvHeadline: 'Where Young Dreams Move Forward',
+  kvSubheadline: 'The 49th Team Creating the Opening Moment of the FIFA World Cup 2026™',
+  introShort: 'Kia creates the very first moment of the FIFA World Cup™.',
+  introParagraphs: [
+    'As the world watches, the FIFA World Cup™ begins with OMBC.',
+    'The Official Match Ball Carrier (OMBC) is a program operated exclusively by Kia,',
+    'inviting children onto the pitch to deliver the official match ball to the referee — formally signaling',
+    'the start of the match. Each child is personally selected and invited by Kia — future stars of the game.',
+    " In that defining moment, they step into the very heart of the world's biggest stage.",
+  ],
+  pcVideoUrl: '/media/kv/pc.mp4',
+  mobileVideoUrl: '/media/kv/mw.mp4',
+  pcPosterUrl: '/media/kv/pc-poster.png',
+  mobilePosterUrl: '/media/kv/mw-poster.png',
+  logoUrl: '/icons/49th-team-logo.png',
 }
+
+interface HeroData {
+  kvTitle: string | null
+  kvHeadline: string | null
+  kvSubheadline: string | null
+  introShort: string | null
+  introParagraphs: string[] | null
+  pcVideoUrl: string | null
+  mobileVideoUrl: string | null
+  pcPosterUrl: string | null
+  mobilePosterUrl: string | null
+  logoUrl: string | null
+}
+
 export default function Hero() {
   const isDesktop = useIsDesktop()
   const wrapperRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
+
+  const { data } = useSanityData<HeroData>(HERO_QUERY)
+  const kvTitle = data?.kvTitle ?? FALLBACK.kvTitle
+  const kvHeadline = data?.kvHeadline ?? FALLBACK.kvHeadline
+  const kvSubheadline = data?.kvSubheadline ?? FALLBACK.kvSubheadline
+  const introShort = data?.introShort ?? FALLBACK.introShort
+  const introParagraphs = data?.introParagraphs?.length ? data.introParagraphs : FALLBACK.introParagraphs
+  const pcVideoUrl = data?.pcVideoUrl ?? FALLBACK.pcVideoUrl
+  const mobileVideoUrl = data?.mobileVideoUrl ?? FALLBACK.mobileVideoUrl
+  const pcPosterUrl = data?.pcPosterUrl ?? FALLBACK.pcPosterUrl
+  const mobilePosterUrl = data?.mobilePosterUrl ?? FALLBACK.mobilePosterUrl
+  const logoUrl = data?.logoUrl ?? FALLBACK.logoUrl
 
   const { scrollYProgress } = useScroll({
     target: wrapperRef,
@@ -71,8 +101,8 @@ export default function Hero() {
           ref={videoRef}
           className="absolute inset-0 size-full object-cover"
           style={{ filter: videoFilter }}
-          src={isDesktop ? '/media/kv/pc.mp4' : '/media/kv/mw.mp4'}
-          poster={isDesktop ? '/media/kv/pc-poster.png' : '/media/kv/mw-poster.png'}
+          src={isDesktop ? pcVideoUrl : mobileVideoUrl}
+          poster={isDesktop ? pcPosterUrl : mobilePosterUrl}
           muted
           playsInline
           loop
@@ -84,13 +114,13 @@ export default function Hero() {
           style={{ opacity: kvOpacity, y: kvY }}
           className="absolute left-6 top-[120px] flex w-[calc(100%-48px)] flex-col items-start gap-4 lg:left-[240px] lg:top-[172px] lg:w-[952px]"
         >
-          <p className="pl-1 text-[18px] leading-[30px] text-white">FIFA Official Match Ball Carrier</p>
+          <p className="pl-1 text-[18px] leading-[30px] text-white">{kvTitle}</p>
           <div className="flex w-full flex-col items-start gap-2">
             <h1 className="text-[32px] font-bold leading-[40px] text-white lg:w-[1046px] lg:text-[48px] lg:leading-[62px]">
-              Where Young Dreams Move Forward
+              {kvHeadline}
             </h1>
             <p className="pl-1 text-[16px] leading-[26px] text-white lg:w-[704px] lg:text-[18px] lg:leading-[30px]">
-              The 49th Team Creating the Opening Moment of the FIFA World Cup 2026™
+              {kvSubheadline}
             </p>
           </div>
         </motion.div>
@@ -100,10 +130,10 @@ export default function Hero() {
           className="absolute left-1/2 top-1/2 flex w-[calc(100%-48px)] -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-4 text-center lg:w-[708px]"
         >
           <p className="text-[16px] font-bold leading-[26px] text-white lg:text-[18px] lg:leading-[30px]">
-            Kia creates the very first moment of the FIFA World Cup™.
+            {introShort}
           </p>
           <div className="flex flex-col gap-1">
-            {INTRO_PARAGRAPH.map((line) => (
+            {introParagraphs.map((line) => (
               <p key={line} className="text-[14px] leading-[24px] text-white lg:text-[18px] lg:leading-[30px]">
                 {line}
               </p>
@@ -115,7 +145,7 @@ export default function Hero() {
           style={{ opacity: logoOpacity }}
           className="absolute left-1/2 top-1/2 w-[280px] -translate-x-1/2 -translate-y-1/2 lg:w-[933px]"
         >
-          <img src="/icons/49th-team-logo.png" alt="49th Team presented by Kia" className="w-full" />
+          <img src={logoUrl} alt="49th Team presented by Kia" className="w-full" />
         </motion.div>
       </div>
     </div>

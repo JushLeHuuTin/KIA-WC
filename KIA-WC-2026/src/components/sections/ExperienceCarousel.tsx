@@ -1,19 +1,78 @@
 import { useRef, useState, type PointerEvent } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useIsDesktop } from '../../hooks/useMediaQuery'
-import { experiences } from './data'
+import { useSanityData } from '../../hooks/useSanityData'
+import { EXPERIENCE_CAROUSEL_QUERY } from '../../lib/queries'
 
-const TITLE = 'Experience Beyond the Match'
-const BODY =
+// Nội dung mặc định -- dùng khi Sanity chưa có document `experienceCarousel`
+// hoặc field nào chưa được nhập (xem quy ước fallback trong CLAUDE.md). Copy
+// lấy đúng theo Figma (khách hàng cung cấp trực tiếp qua ảnh chụp màn hình),
+// không tự diễn giải/paraphrase.
+const FALLBACK_HEADING = 'Experience Beyond the Match'
+const FALLBACK_BODY =
   'The excitement that begins inside the stadium extends far beyond it. As an official partner of the FIFA World Cup 2026™, Kia expands the tournament experience — from mobility to shared experiences and connection.'
+const FALLBACK_EXPERIENCES = [
+  {
+    _key: 'vehicle-support',
+    title: 'Official Tournament Vehicle Support',
+    description:
+      'Kia has long supported the mobility of players and officials across FIFA international tournaments, ensuring that every moment flows seamlessly.',
+    pcImageUrl: '/media/experience/pc-1.jpg',
+    thumbImageUrl: '/media/experience/pc-1-thumb.jpg',
+    mwImageUrl: '/media/experience/mw-1.jpg',
+  },
+  {
+    _key: 'youth-programs',
+    title: 'Youth and Future Generation Programs',
+    description:
+      "From youth and grassroots fan moments to futsal and the FIFA eWorld Cup™, Kia continues to support football's future — staying closer to the next generation of fans and dreams.",
+    pcImageUrl: '/media/experience/pc-2.jpg',
+    thumbImageUrl: '/media/experience/pc-2-thumb.jpg',
+    mwImageUrl: '/media/experience/mw-2.jpg',
+  },
+  {
+    _key: 'fan-festival',
+    title: 'FIFA Fan Festival',
+    description:
+      'A global gathering place beyond the stadium, where fans connect with the passion of football with culture and celebration through mobility experience.',
+    pcImageUrl: '/media/experience/pc-3.jpg',
+    thumbImageUrl: '/media/experience/pc-3-thumb.jpg',
+    mwImageUrl: '/media/experience/mw-3.jpg',
+  },
+  {
+    _key: 'brand-booth',
+    title: 'Brand Booth',
+    description:
+      'A space to experience the present and future of mobility. Through its EV lineup, Kia strives for electrification and sustainability.',
+    pcImageUrl: '/media/experience/pc-4.jpg',
+    thumbImageUrl: '/media/experience/pc-4-thumb.jpg',
+    mwImageUrl: '/media/experience/mw-4.jpg',
+  },
+]
 
-// Loop thủ công (nhân 3 bản dữ liệu) -- tránh dùng Swiper `loop` cho carousel mobile,
-// vì loop gốc của Swiper đã xác nhận không đáng tin cậy trong dự án này
-// (xem ghi chú tương tự trong MainFilmCarousel.tsx).
-const REPEAT_COUNT = 3
-const LOOPED = Array.from({ length: REPEAT_COUNT }, (_, copy) =>
-  experiences.map((item, i) => ({ ...item, key: `${i}-${copy}` })),
-).flat()
+interface ExperienceCarouselData {
+  heading: string | null
+  body: string | null
+  experiences:
+    | {
+        _key: string
+        title: string
+        description: string | null
+        pcImageUrl: string | null
+        thumbImageUrl: string | null
+        mwImageUrl: string | null
+      }[]
+    | null
+}
+
+function useExperienceContent() {
+  const { data } = useSanityData<ExperienceCarouselData>(EXPERIENCE_CAROUSEL_QUERY)
+  return {
+    heading: data?.heading ?? FALLBACK_HEADING,
+    body: data?.body ?? FALLBACK_BODY,
+    experiences: data?.experiences?.length ? data.experiences : FALLBACK_EXPERIENCES,
+  }
+}
 
 // Kéo trái/phải để chuyển slide (đúng rule PDF mục 9). Dùng Pointer Events thủ công
 // thay vì `drag` prop của Motion -- tránh lặp lại các bug đã gặp với thư viện này
@@ -43,6 +102,7 @@ function useSwipe(onSwipe: (direction: 1 | -1) => void) {
 }
 
 function DesktopVersion() {
+  const { heading, body, experiences } = useExperienceContent()
   const [activeIndex, setActiveIndex] = useState(0)
   const active = experiences[activeIndex]
 
@@ -69,11 +129,11 @@ function DesktopVersion() {
           className="grid gap-4 lg:grid-cols-2 lg:gap-10"
         >
           <h2 className="text-[24px] leading-9 text-[#05141f] lg:text-[36px] lg:leading-[54px]">
-            {TITLE}
+            {heading}
           </h2>
 
           <p className="text-[14px] leading-6 text-[#303e48] lg:text-[16px] lg:leading-7">
-            {BODY}
+            {body}
           </p>
         </motion.div>
 
@@ -87,7 +147,7 @@ function DesktopVersion() {
             <AnimatePresence mode="wait">
               <motion.img
                 key={activeIndex}
-                src={active.pc}
+                src={active.pcImageUrl ?? undefined}
                 alt={active.title}
                 draggable={false}
                 initial={{ opacity: 0 }}
@@ -108,7 +168,7 @@ function DesktopVersion() {
                 <div key={slot} className="relative aspect-square overflow-hidden rounded-lg">
                   <AnimatePresence mode="wait">
                     <motion.button
-                      key={item.title}
+                      key={item._key}
                       type="button"
                       onClick={() => setActiveIndex(i)}
                       aria-label={`Show ${item.title}`}
@@ -118,7 +178,7 @@ function DesktopVersion() {
                       transition={{ duration: 0.3, ease: 'easeInOut' }}
                       className="absolute inset-0"
                     >
-                      <img src={item.thumb} alt={item.title} className="size-full object-cover" />
+                      <img src={item.thumbImageUrl ?? undefined} alt={item.title} className="size-full object-cover" />
                     </motion.button>
                   </AnimatePresence>
                 </div>
@@ -144,7 +204,7 @@ function DesktopVersion() {
         <div className="mt-8 flex items-center justify-center gap-1.5 lg:mt-10">
           {experiences.map((item, i) => (
             <button
-              key={item.title}
+              key={item._key}
               type="button"
               aria-label={`Go to ${item.title}`}
               onClick={() => setActiveIndex(i)}
@@ -178,12 +238,20 @@ function DesktopVersion() {
 const MOBILE_TRANSITION_MS = 500
 
 function MobileVersion() {
+  const { heading, body, experiences } = useExperienceContent()
   const [slideIndex, setSlideIndex] = useState(experiences.length)
   const [noTransition, setNoTransition] = useState(false)
   const recenterTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   const activeIndex = ((slideIndex % experiences.length) + experiences.length) % experiences.length
   const active = experiences[activeIndex]
   const swipeHandlers = useSwipe((direction) => goto(direction))
+
+  // Loop thủ công (nhân 3 bản dữ liệu) -- tránh dùng Swiper `loop` cho carousel
+  // mobile, vì loop gốc của Swiper đã xác nhận không đáng tin cậy trong dự án
+  // này (xem ghi chú tương tự trong MainFilmCarousel.tsx).
+  const LOOPED = Array.from({ length: 3 }, (_, copy) =>
+    experiences.map((item) => ({ ...item, key: `${item._key}-${copy}` })),
+  ).flat()
 
   // Cùng kỹ thuật loop thủ công như MainFilmCarousel: sau khi trượt xong, nếu đã
   // trôi ra khỏi 1/3 giữa của mảng lặp, âm thầm nhảy về vị trí tương đương ở giữa
@@ -211,8 +279,8 @@ function MobileVersion() {
   return (
     <section className="bg-black px-2 py-6">
       <div className="rounded-2xl bg-[#e8eaeb] px-6 pb-10 pt-10">
-        <h2 className="text-[24px] leading-9 text-[#05141f]">{TITLE}</h2>
-        <p className="mt-4 text-[14px] leading-6 text-[#303e48]">{BODY}</p>
+        <h2 className="text-[24px] leading-9 text-[#05141f]">{heading}</h2>
+        <p className="mt-4 text-[14px] leading-6 text-[#303e48]">{body}</p>
 
         <div className="relative mt-8 overflow-hidden rounded-xl">
           <div
@@ -223,7 +291,7 @@ function MobileVersion() {
             {LOOPED.map((item) => (
               <img
                 key={item.key}
-                src={item.mw}
+                src={item.mwImageUrl ?? undefined}
                 alt={item.title}
                 draggable={false}
                 className="aspect-square w-full shrink-0 object-cover"
@@ -242,7 +310,7 @@ function MobileVersion() {
         <div className="mt-6 flex items-center justify-center gap-1.5">
           {experiences.map((item, i) => (
             <span
-              key={item.title}
+              key={item._key}
               className={`rounded-full transition-all duration-300 ${i === activeIndex ? 'size-1.5 bg-[#05141f]' : 'size-1 bg-[#4a565e]/40'
                 }`}
             />
