@@ -26,6 +26,9 @@ export default function Header() {
         <button type="button" aria-label="Search">
           <img src="/icons/ic-search.svg" alt="" className="size-6" />
         </button>
+        <button type="button" aria-label="Menu" className="lg:hidden">
+          <img src="/icons/ic-menu.svg" alt="" className="size-6" />
+        </button>
       </div>
     </header>
   )
