@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s https://kia-wc-m4ps.vercel.app/_next/static/chunks/main-app-22249f4796da92bc.js --max-time 15 -o /tmp/mainapp.js)",
+      "Bash(curl -s \"https://kia-wc-m4ps.vercel.app/_next/static/chunks/app/\\(payload\\)/admin/%5B%5B...segments%5D%5D/page-2500d3180d161033.js\" --max-time 15 -o /tmp/adminpage.js)"
+    ]
+  }
+}
