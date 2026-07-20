@@ -6,8 +6,8 @@ import {
   useScroll,
 } from 'motion/react'
 import { useIsDesktop } from '../../hooks/useMediaQuery'
-import { useSanityData } from '../../hooks/useSanityData'
-import { WATCH_MORE_QUERY } from '../../lib/queries'
+import { usePayloadData } from '../../hooks/usePayloadData'
+import { normalizeWatchMore, type PayloadWatchMore } from '../../lib/normalize'
 import { remap } from '../../lib/scroll'
 
 // Nội dung mặc định -- dùng khi Sanity chưa có document `watchMore` hoặc field
@@ -20,16 +20,6 @@ const FALLBACK = {
   buttonHref: '/videos',
   pcImageUrl: '/media/playlist/pc.jpg',
   mwImageUrl: '/media/playlist/mw.jpg',
-}
-
-interface WatchMoreData {
-  heading: string | null
-  body: string | null
-  buttonTitle: string | null
-  buttonSubtitle: string | null
-  buttonHref: string | null
-  pcImageUrl: string | null
-  mwImageUrl: string | null
 }
 
 function ArrowIcon() {
@@ -113,7 +103,8 @@ function Content({ data }: { data: ReturnType<typeof useWatchMoreContent> }) {
 }
 
 function useWatchMoreContent() {
-  const { data } = useSanityData<WatchMoreData>(WATCH_MORE_QUERY)
+  const { data: rawData } = usePayloadData<PayloadWatchMore>('watch-more')
+  const data = normalizeWatchMore(rawData)
   return {
     heading: data?.heading ?? FALLBACK.heading,
     body: data?.body ?? FALLBACK.body,

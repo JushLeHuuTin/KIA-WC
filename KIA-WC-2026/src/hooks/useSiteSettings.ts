@@ -1,9 +1,9 @@
-import { useSanityData } from './useSanityData'
-import { SITE_SETTINGS_QUERY } from '../lib/queries'
+import { usePayloadData } from './usePayloadData'
+import { normalizeSiteSettings, type PayloadSiteSettings } from '../lib/normalize'
 
 // Dữ liệu dùng chung nhiều nơi trên site (logo, social links, SEO mặc định) --
 // tách khỏi từng section vì không thuộc riêng section nào (xem CLAUDE.md mục
-// "CMS (Sanity)"). Fallback theo từng field như các hook section khác.
+// "CMS"). Fallback theo từng field như các hook section khác.
 const FALLBACK = {
   logoUrl: '/icons/kia-logo.svg',
   socialLinks: [] as { _key: string; platform: string; href: string }[],
@@ -13,14 +13,9 @@ const FALLBACK = {
   seoOgImageUrl: null as string | null,
 }
 
-interface SiteSettingsData {
-  logoUrl: string | null
-  socialLinks: { _key: string; platform: string; href: string }[] | null
-  seo: { title: string | null; description: string | null; ogImageUrl: string | null } | null
-}
-
 export function useSiteSettings() {
-  const { data } = useSanityData<SiteSettingsData>(SITE_SETTINGS_QUERY)
+  const { data: rawData } = usePayloadData<PayloadSiteSettings>('site-settings')
+  const data = normalizeSiteSettings(rawData)
   return {
     logoUrl: data?.logoUrl ?? FALLBACK.logoUrl,
     socialLinks: data?.socialLinks?.length ? data.socialLinks : FALLBACK.socialLinks,

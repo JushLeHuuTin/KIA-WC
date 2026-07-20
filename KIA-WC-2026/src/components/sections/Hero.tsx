@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react'
 import { motion, useMotionValue, useMotionValueEvent, useScroll } from 'motion/react'
 import { useIsDesktop } from '../../hooks/useMediaQuery'
-import { useSanityData } from '../../hooks/useSanityData'
+import { usePayloadData } from '../../hooks/usePayloadData'
 import { remap } from '../../lib/scroll'
-import { HERO_QUERY } from '../../lib/queries'
+import { normalizeHero, type PayloadHero } from '../../lib/normalize'
 
 // Nội dung mặc định -- dùng khi Sanity chưa có document `hero` hoặc field nào đó
 // chưa được nhập (fallback theo từng field, không phải theo cả document, để có
@@ -27,25 +27,13 @@ const FALLBACK = {
   logoUrl: '/icons/49th-team-logo.png',
 }
 
-interface HeroData {
-  kvTitle: string | null
-  kvHeadline: string | null
-  kvSubheadline: string | null
-  introShort: string | null
-  introParagraphs: string[] | null
-  pcVideoUrl: string | null
-  mobileVideoUrl: string | null
-  pcPosterUrl: string | null
-  mobilePosterUrl: string | null
-  logoUrl: string | null
-}
-
 export default function Hero() {
   const isDesktop = useIsDesktop()
   const wrapperRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
 
-  const { data } = useSanityData<HeroData>(HERO_QUERY)
+  const { data: rawData } = usePayloadData<PayloadHero>('hero')
+  const data = normalizeHero(rawData)
   const kvTitle = data?.kvTitle ?? FALLBACK.kvTitle
   const kvHeadline = data?.kvHeadline ?? FALLBACK.kvHeadline
   const kvSubheadline = data?.kvSubheadline ?? FALLBACK.kvSubheadline

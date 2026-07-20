@@ -1,8 +1,8 @@
 import { useRef, useState, type PointerEvent } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useIsDesktop } from '../../hooks/useMediaQuery'
-import { useSanityData } from '../../hooks/useSanityData'
-import { EXPERIENCE_CAROUSEL_QUERY } from '../../lib/queries'
+import { usePayloadData } from '../../hooks/usePayloadData'
+import { normalizeExperienceCarousel, type PayloadExperienceCarousel } from '../../lib/normalize'
 
 // Nội dung mặc định -- dùng khi Sanity chưa có document `experienceCarousel`
 // hoặc field nào chưa được nhập (xem quy ước fallback trong CLAUDE.md). Copy
@@ -50,23 +50,9 @@ const FALLBACK_EXPERIENCES = [
   },
 ]
 
-interface ExperienceCarouselData {
-  heading: string | null
-  body: string | null
-  experiences:
-    | {
-        _key: string
-        title: string
-        description: string | null
-        pcImageUrl: string | null
-        thumbImageUrl: string | null
-        mwImageUrl: string | null
-      }[]
-    | null
-}
-
 function useExperienceContent() {
-  const { data } = useSanityData<ExperienceCarouselData>(EXPERIENCE_CAROUSEL_QUERY)
+  const { data: rawData } = usePayloadData<PayloadExperienceCarousel>('experience-carousel')
+  const data = normalizeExperienceCarousel(rawData)
   return {
     heading: data?.heading ?? FALLBACK_HEADING,
     body: data?.body ?? FALLBACK_BODY,

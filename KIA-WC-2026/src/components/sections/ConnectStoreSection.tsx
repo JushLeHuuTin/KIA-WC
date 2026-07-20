@@ -1,7 +1,7 @@
 import { motion } from 'motion/react'
 import { useIsDesktop } from '../../hooks/useMediaQuery'
-import { useSanityData } from '../../hooks/useSanityData'
-import { CONNECT_STORE_QUERY } from '../../lib/queries'
+import { usePayloadData } from '../../hooks/usePayloadData'
+import { normalizeConnectStore, type PayloadConnectStore } from '../../lib/normalize'
 
 // Nội dung mặc định -- dùng khi Sanity chưa có document `connectStore` hoặc
 // field nào chưa được nhập (xem quy ước fallback trong CLAUDE.md).
@@ -12,15 +12,6 @@ const FALLBACK = {
   buttonHref: '/connect-store',
   pcImageUrl: '/media/connect-store/pc.jpg',
   mwImageUrl: '/media/connect-store/mw.jpg',
-}
-
-interface ConnectStoreData {
-  heading: string | null
-  body: string | null
-  buttonTitle: string | null
-  buttonHref: string | null
-  pcImageUrl: string | null
-  mwImageUrl: string | null
 }
 
 // Heading cho phép xuống dòng thủ công trong Sanity (field type "text") --
@@ -61,7 +52,8 @@ function LearnMoreButton({ title, href }: { title: string; href: string }) {
 
 export default function ConnectStoreSection() {
   const isDesktop = useIsDesktop()
-  const { data } = useSanityData<ConnectStoreData>(CONNECT_STORE_QUERY)
+  const { data: rawData } = usePayloadData<PayloadConnectStore>('connect-store')
+  const data = normalizeConnectStore(rawData)
   const heading = data?.heading ?? FALLBACK.heading
   const body = data?.body ?? FALLBACK.body
   const buttonTitle = data?.buttonTitle ?? FALLBACK.buttonTitle

@@ -5,29 +5,17 @@ import { Navigation } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import { useIsDesktop } from '../../hooks/useMediaQuery'
-import { useSanityData } from '../../hooks/useSanityData'
-import { MAIN_FILM_CAROUSEL_QUERY } from '../../lib/queries'
+import { usePayloadData } from '../../hooks/usePayloadData'
+import { normalizeMainFilmCarousel, type PayloadMainFilmCarousel } from '../../lib/normalize'
 import YouTubePlayer from '../ui/YouTubePlayer'
 
-// Nội dung mặc định -- dùng khi Sanity chưa có document `mainFilmCarousel` hoặc
+// Nội dung mặc định -- dùng khi Payload chưa có global `main-film-carousel` hoặc
 // chưa nhập đủ film (xem quy ước fallback trong CLAUDE.md).
 const FALLBACK_FILMS = [
   { _key: 'the-next-legend', title: 'The Next Legend', videoId: 'F3oRObMMNx8', pcThumbnailUrl: '/media/cup-main-film/pc-1.jpg', mwThumbnailUrl: '/media/cup-main-film/mw-1.jpg' },
   { _key: 'master-plan', title: 'Master Plan', videoId: 'F3oRObMMNx8', pcThumbnailUrl: '/media/cup-main-film/pc-2.jpg', mwThumbnailUrl: '/media/cup-main-film/mw-2.jpg' },
   { _key: 'deliver-to-inspire', title: 'Deliver to Inspire', videoId: 'dQw4w9WgXcQ', pcThumbnailUrl: '/media/cup-main-film/pc-3.jpg', mwThumbnailUrl: '/media/cup-main-film/mw-3.jpg' },
 ]
-
-interface MainFilmCarouselData {
-  films:
-    | {
-        _key: string
-        title: string | null
-        videoId: string | null
-        pcThumbnailUrl: string | null
-        mwThumbnailUrl: string | null
-      }[]
-    | null
-}
 
 // Swiper's built-in `loop` mode doesn't duplicate slides reliably in this setup
 // (verified: it freezes after one transition with only 3 slidesPerView="auto"
@@ -41,7 +29,8 @@ export default function MainFilmCarousel() {
   const swiperRef = useRef<SwiperType | null>(null)
   const recenterTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const { data } = useSanityData<MainFilmCarouselData>(MAIN_FILM_CAROUSEL_QUERY)
+  const { data: rawData } = usePayloadData<PayloadMainFilmCarousel>('main-film-carousel')
+  const data = normalizeMainFilmCarousel(rawData)
   const FILMS = data?.films?.length ? data.films : FALLBACK_FILMS
   const LOOPED_FILMS = Array.from({ length: REPEAT_COUNT }, (_, copy) =>
     FILMS.map((film) => ({ ...film, key: `${film._key}-${copy}` })),

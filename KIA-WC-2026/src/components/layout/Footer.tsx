@@ -1,7 +1,7 @@
 import { motion } from 'motion/react'
-import { useSanityData } from '../../hooks/useSanityData'
+import { usePayloadData } from '../../hooks/usePayloadData'
 import { useSiteSettings } from '../../hooks/useSiteSettings'
-import { FOOTER_QUERY } from '../../lib/queries'
+import { normalizeFooter, type PayloadFooter } from '../../lib/normalize'
 
 // Nội dung mặc định -- dùng khi Sanity chưa có document `footer` hoặc field
 // nào chưa được nhập (xem quy ước fallback trong CLAUDE.md).
@@ -47,14 +47,6 @@ const FALLBACK_DISCLAIMER_1 =
 const FALLBACK_DISCLAIMER_2 =
   '페이지 내 사용된 일부 시각 요소는 인공지능(AI) 기반 이미지 생성 도구를 통해 제작되었으며, 실제 인물이나 장소 또는 사건을 묘사한 것이 아닙니다. 본 콘텐츠는 당사의 윤리 및 법적 기준을 준수하여 사용되고 있습니다.'
 
-interface FooterData {
-  stayInspiredHeading: string | null
-  stayInspiredCards: { _key: string; imageUrl: string | null; title: string; subtitle: string | null }[] | null
-  menuColumns: { _key: string; title: string; items: { _key: string; label: string; href: string }[] | null }[] | null
-  disclaimer1: string | null
-  disclaimer2: string | null
-}
-
 // Icon mạng xã hội là ảnh cố định (logo từng nền tảng) -- chỉ đường dẫn (href)
 // lấy từ Site Settings, map theo tên platform. Nút "Family Site"/"Change
 // Region", link điều khoản/chính sách và dòng bản quyền là UI/pháp lý cố định
@@ -69,7 +61,8 @@ const SOCIAL_ICONS = [
 
 export default function Footer() {
   const { logoUrl, socialLinks } = useSiteSettings()
-  const { data } = useSanityData<FooterData>(FOOTER_QUERY)
+  const { data: rawData } = usePayloadData<PayloadFooter>('footer')
+  const data = normalizeFooter(rawData)
   const stayInspiredHeading = data?.stayInspiredHeading ?? FALLBACK_STAY_INSPIRED_HEADING
   const stayInspiredCards = data?.stayInspiredCards?.length ? data.stayInspiredCards : FALLBACK_STAY_INSPIRED_CARDS
   const menuColumns = data?.menuColumns?.length ? data.menuColumns : FALLBACK_MENU_COLUMNS

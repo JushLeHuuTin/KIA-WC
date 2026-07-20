@@ -1,7 +1,7 @@
 import { motion } from 'motion/react'
 import { useIsDesktop } from '../../hooks/useMediaQuery'
-import { useSanityData } from '../../hooks/useSanityData'
-import { OUTRO_QUERY } from '../../lib/queries'
+import { usePayloadData } from '../../hooks/usePayloadData'
+import { normalizeOutro, type PayloadOutro } from '../../lib/normalize'
 
 // Nội dung mặc định -- dùng khi Sanity chưa có document `outro` hoặc field nào
 // chưa được nhập (xem quy ước fallback trong CLAUDE.md). Copy lấy đúng theo
@@ -26,15 +26,10 @@ const FALLBACK_PARAGRAPHS = [
 const FALLBACK_PC_IMAGE = '/media/outro/pc.jpg'
 const FALLBACK_MW_IMAGE = '/media/outro/mw.jpg'
 
-interface OutroData {
-  paragraphs: { _key: string; text: string; bold: boolean | null }[] | null
-  pcImageUrl: string | null
-  mwImageUrl: string | null
-}
-
 export default function OutroSection() {
   const isDesktop = useIsDesktop()
-  const { data } = useSanityData<OutroData>(OUTRO_QUERY)
+  const { data: rawData } = usePayloadData<PayloadOutro>('outro')
+  const data = normalizeOutro(rawData)
   const paragraphs = data?.paragraphs?.length ? data.paragraphs : FALLBACK_PARAGRAPHS
   const image = (isDesktop ? data?.pcImageUrl : data?.mwImageUrl) ?? (isDesktop ? FALLBACK_PC_IMAGE : FALLBACK_MW_IMAGE)
 

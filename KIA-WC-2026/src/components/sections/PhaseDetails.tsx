@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useIsDesktop } from '../../hooks/useMediaQuery'
-import { useSanityData } from '../../hooks/useSanityData'
-import { PHASE_DETAILS_QUERY } from '../../lib/queries'
+import { usePayloadData } from '../../hooks/usePayloadData'
+import { normalizePhaseDetails, type PayloadPhaseDetails } from '../../lib/normalize'
 import YouTubePlayer from '../ui/YouTubePlayer'
 
 // Gradient nền của từng item trong danh sách -- lấy đúng màu từ Figma
@@ -214,28 +214,6 @@ const FALLBACK_PHASES = [
   },
 ]
 
-interface PhaseDetailsData {
-  phases:
-    | {
-        _key: string
-        anchorId: string
-        eyebrow: string
-        headline: string
-        body: string | null
-        bgPcUrl: string | null
-        bgMwUrl: string | null
-        items: {
-          _key: string
-          title: string
-          description: string | null
-          videoId: string | null
-          pcImageUrl: string | null
-          mwImageUrl: string | null
-        }[]
-      }[]
-    | null
-}
-
 type PhaseDetail = {
   _key: string
   anchorId: string
@@ -444,7 +422,8 @@ function PhaseDetailCard({ phase }: { phase: PhaseDetail }) {
 }
 
 export default function PhaseDetails() {
-  const { data } = useSanityData<PhaseDetailsData>(PHASE_DETAILS_QUERY)
+  const { data: rawData } = usePayloadData<PayloadPhaseDetails>('phase-details')
+  const data = normalizePhaseDetails(rawData)
   const phases = data?.phases?.length ? data.phases : FALLBACK_PHASES
 
   return (

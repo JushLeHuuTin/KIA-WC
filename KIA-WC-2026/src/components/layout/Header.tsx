@@ -1,8 +1,8 @@
-import { useSanityData } from '../../hooks/useSanityData'
+import { usePayloadData } from '../../hooks/usePayloadData'
 import { useSiteSettings } from '../../hooks/useSiteSettings'
-import { HEADER_QUERY } from '../../lib/queries'
+import { normalizeHeader, type PayloadHeader } from '../../lib/normalize'
 
-// Nội dung mặc định -- dùng khi Sanity chưa có document `header` hoặc field nào
+// Nội dung mặc định -- dùng khi Payload chưa có global `header` hoặc field nào
 // đó chưa được nhập (fallback theo từng field, xem quy ước trong CLAUDE.md).
 // Logo lấy từ Site Settings (dùng chung với Footer), không phải field riêng ở đây.
 const FALLBACK_NAV_ITEMS = [
@@ -13,13 +13,10 @@ const FALLBACK_NAV_ITEMS = [
   { _key: 'newsroom', label: 'Newsroom', href: '#newsroom' },
 ]
 
-interface HeaderData {
-  navItems: { _key: string; label: string; href: string }[] | null
-}
-
 export default function Header() {
   const { logoUrl } = useSiteSettings()
-  const { data } = useSanityData<HeaderData>(HEADER_QUERY)
+  const { data: rawData } = usePayloadData<PayloadHeader>('header')
+  const data = normalizeHeader(rawData)
   const navItems = data?.navItems?.length ? data.navItems : FALLBACK_NAV_ITEMS
 
   return (
