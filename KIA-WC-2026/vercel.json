@@ -7,6 +7,10 @@
     {
       "source": "/admin/:path*",
       "destination": "https://kia-wc-ds7t.vercel.app/admin/:path*"
+    },
+    {
+      "source": "/static/:path*",
+      "destination": "https://kia-wc-ds7t.vercel.app/static/:path*"
     }
   ]
 }
