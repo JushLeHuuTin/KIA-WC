@@ -11,3 +11,15 @@ body,
   min-height: 100svh;
   background: #000;
 }
+
+/* Chặn tràn ngang toàn trang khi nội dung CMS chứa 1 chuỗi dài liền không có
+   khoảng trắng để ngắt dòng (URL dài, hash, chuỗi ký tự lặp do gõ nhầm...) --
+   phát hiện qua test: 1 dòng ~3000 ký tự liền trong PhaseDetails/PhaseOverview
+   đẩy scrollWidth toàn trang lên 2741px trên viewport 390px (tạo thanh cuộn
+   ngang cho CẢ TRANG, không chỉ vỡ trong 1 thẻ). overflow-wrap: anywhere cho
+   phép ngắt dòng giữa từ khi cần, safe hơn break-all vì chỉ áp dụng lúc từ
+   thật sự dài hơn khung chứa.
+   https://developer.mozilla.org/en-US/docs/Web/CSS/overflow-wrap */
+h1, h2, h3, h4, h5, h6, p {
+  overflow-wrap: anywhere;
+}

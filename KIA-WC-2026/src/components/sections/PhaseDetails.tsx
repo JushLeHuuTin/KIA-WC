@@ -242,6 +242,12 @@ function PhaseDetailCard({ phase }: { phase: PhaseDetail }) {
     setActiveItem((prev) => (prev + delta + phase.items.length) % phase.items.length)
   }
 
+  // Phase chưa nhập item con nào (mảng lồng rỗng, ví dụ đang nhập dở trong CMS)
+  // -- bỏ qua render phase này thay vì crash cả trang khi truy cập
+  // phase.items[activeItem] trên mảng rỗng (không có ErrorBoundary nào bọc
+  // quanh section này).
+  if (phase.items.length === 0) return null
+
   const active = phase.items[activeItem]
 
   return (

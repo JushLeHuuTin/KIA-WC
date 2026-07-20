@@ -200,7 +200,6 @@ export interface PayloadPhaseOverview {
   phases:
     | {
         id: string
-        anchorId: string | null
         label: string | null
         title: string | null
         subtitle: string | null
@@ -231,10 +230,13 @@ export function normalizePhaseOverview(doc: PayloadPhaseOverview | null): PhaseO
   return {
     heading: doc.heading ?? null,
     bodyParagraphs: doc.bodyParagraphs?.map((p) => p.text ?? '').filter(Boolean) ?? null,
+    // anchorId sinh theo VỊ TRÍ ("phase-1", "phase-2"...), không đọc từ CMS --
+    // khớp với normalizePhaseDetails bên dưới, đảm bảo nút "Go to section"
+    // luôn tìm đúng section tương ứng dù người dùng CMS không tự gõ id.
     phases:
-      doc.phases?.map((phase) => ({
+      doc.phases?.map((phase, i) => ({
         _key: phase.id,
-        anchorId: phase.anchorId ?? '',
+        anchorId: `phase-${i + 1}`,
         label: phase.label ?? '',
         title: phase.title ?? '',
         subtitle: phase.subtitle ?? null,
@@ -248,7 +250,6 @@ export interface PayloadPhaseDetails {
   phases:
     | {
         id: string
-        anchorId: string | null
         eyebrow: string | null
         headline: string | null
         body: string | null
@@ -429,10 +430,13 @@ export function normalizeOutro(doc: PayloadOutro | null): OutroData | null {
 export function normalizePhaseDetails(doc: PayloadPhaseDetails | null): PhaseDetailsData | null {
   if (!doc) return null
   return {
+    // anchorId sinh theo VỊ TRÍ, khớp với normalizePhaseOverview ở trên -- xem
+    // comment ở đó để biết lý do (2 Global độc lập trước đây tự nhập tay 2
+    // chuỗi riêng, dễ lệch nhau khiến nút "Go to section" không nhảy đúng).
     phases:
-      doc.phases?.map((phase) => ({
+      doc.phases?.map((phase, i) => ({
         _key: phase.id,
-        anchorId: phase.anchorId ?? '',
+        anchorId: `phase-${i + 1}`,
         eyebrow: phase.eyebrow ?? '',
         headline: phase.headline ?? '',
         body: phase.body ?? null,

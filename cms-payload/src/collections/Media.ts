@@ -7,6 +7,8 @@ import { publicRead } from '../access/publicRead'
 // vercelBlobStorage trong payload.config.ts, không phải ở đây.
 export const Media: CollectionConfig = {
   slug: 'media',
+  labels: { singular: 'Ảnh/Video', plural: 'Ảnh/Video' },
+  admin: { group: 'Quản trị' },
   access: {
     read: publicRead,
   },
@@ -17,6 +19,7 @@ export const Media: CollectionConfig = {
     {
       name: 'alt',
       type: 'text',
+      label: 'Mô tả ảnh (alt text)',
     },
   ],
 }

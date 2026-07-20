@@ -1,5 +1,6 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
+import { vi } from '@payloadcms/translations/languages/vi'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { buildConfig } from 'payload'
@@ -25,6 +26,29 @@ const dirname = path.dirname(filename)
 export default buildConfig({
   admin: {
     user: Users.slug,
+    components: {
+      graphics: {
+        // Logo trang đăng nhập (nền sáng) + Icon sidebar (nền tối) -- thay
+        // logo mặc định của Payload bằng logo Kia. Đường dẫn dạng
+        // "<file>#<export>" được payload generate:importmap quét ra thành
+        // import thật, phải chạy lại lệnh đó sau khi thêm/đổi component.
+        Logo: '/src/components/KiaLogo#KiaLogo',
+        Icon: '/src/components/KiaLogo#KiaIcon',
+      },
+      // Không còn afterLogin ở đây -- trang /admin/login giờ dùng route riêng
+      // (src/app/(payload)/admin/login/page.tsx) với form tự viết, import
+      // trực tiếp RememberEmailCheckbox/LoginFooter thay vì qua slot của
+      // Payload, để đặt checkbox đúng giữa Password và nút Login (xem
+      // CustomLoginForm.tsx).
+    },
+  },
+  // Việt hóa toàn bộ chữ dựng sẵn của Payload (Email, Password, Login, Forgot
+  // password?...) -- áp dụng luôn cho CustomLoginForm.tsx vì nó dùng chung
+  // hàm t() qua useTranslation() của Payload, không phải tự viết text tay.
+  // Chỉ có 1 ngôn ngữ nên Payload tự ẩn nút đổi ngôn ngữ.
+  i18n: {
+    supportedLanguages: { vi },
+    fallbackLanguage: 'vi',
   },
   collections: [Users, Media],
   globals: [

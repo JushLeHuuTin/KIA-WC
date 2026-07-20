@@ -6,14 +6,17 @@ import { publicRead } from '../access/publicRead'
 export const Header: GlobalConfig = {
   slug: 'header',
   label: 'Header (Menu điều hướng)',
+  admin: { group: 'Nội dung trang' },
   access: { read: publicRead },
   fields: [
     {
       name: 'navItems',
       type: 'array',
+      label: 'Mục menu',
+      labels: { singular: 'Mục menu', plural: 'Mục menu' },
       fields: [
-        { name: 'label', type: 'text', required: true },
-        { name: 'href', type: 'text', required: true },
+        { name: 'label', type: 'text', required: true, label: 'Tên hiển thị' },
+        { name: 'href', type: 'text', required: true, label: 'Đường dẫn' },
       ],
     },
   ],
