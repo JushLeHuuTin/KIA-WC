@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/admin",
+      "destination": "https://kia-wc-ds7t.vercel.app/admin"
+    },
+    {
+      "source": "/admin/:path*",
+      "destination": "https://kia-wc-ds7t.vercel.app/admin/:path*"
+    }
+  ]
+}

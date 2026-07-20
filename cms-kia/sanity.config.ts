@@ -42,6 +42,12 @@ export default defineConfig({
   title: 'OMBC — Kia FIFA World Cup 2026',
   icon: KiaIcon,
 
+  // Studio được deploy như 1 Vercel project riêng (root directory = cms-kia/)
+  // rồi trỏ vào qua rewrite "/admin/:path*" ở vercel.json của site chính --
+  // basePath phải khớp đúng path đó để Studio tự sinh link/asset nội bộ đúng
+  // (vd /admin/structure thay vì /structure).
+  basePath: '/admin',
+
   projectId: '4k3v8aiu',
   dataset: 'production',
 
