@@ -97,7 +97,7 @@ function Content({ data }: { data: ReturnType<typeof useWatchMoreContent> }) {
           duration: 0.5,
           delay: 0.4,
         }}
-        className="mt-8 inline-flex items-center gap-3 rounded-[1px] border border-white/25 bg-black/20 px-5 py-4 text-white backdrop-blur-sm transition hover:bg-black/35"
+        className="mt-8 inline-flex items-center gap-3 rounded-[8px] border border-white/25 bg-black/20 px-5 py-4 text-white backdrop-blur-sm transition hover:bg-black/35"
       >
         <div>
           <p className="text-[15px] font-medium">{data.buttonTitle}</p>

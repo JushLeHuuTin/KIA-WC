@@ -270,13 +270,22 @@ function PhaseDetailCard({ phase }: { phase: PhaseDetail }) {
    <section
   id={phase.anchorId}
   className=" isolate relative mx-2 my-3 scroll-mt-24 overflow-hidden rounded-2xl border border-white/10 bg-[#181C1F]/95 backdrop-blur-sm shadow-[0_40px_120px_rgba(0,0,0,0.55)] px-6 py-10 lg:mx-5 lg:my-4 lg:scroll-mt-28 lg:px-20 lg:py-[60px]">
-      <div className="absolute inset-0 -z-1 pointer-events-none">
+      {/* Mobile: ảnh nền giữ đúng tỉ lệ gốc (340x191 -- asset MW cố định tỉ lệ
+          này cho cả 4 phase), nằm trong luồng bình thường ở đầu card, bleed ra
+          sát mép/góc bo tròn bằng margin âm, KHÔNG kéo giãn phủ kín cả card như
+          trước (object-cover trên inset-0 với ảnh nguồn 340x191 bị zoom/crop cực
+          mạnh khi card cao hơn nhiều so với 191px, mất hết bối cảnh ảnh gốc --
+          đúng như ảnh Figma: thấy toàn bộ ảnh, có padding-top/background phía
+          dưới, không phải ảnh bị scale). Desktop: giữ nguyên kiểu cũ (absolute
+          inset-0 object-cover phủ kín card, ảnh PC vốn được export theo đúng tỉ
+          lệ card rộng nên cover không bị crop bất thường). */}
+      <div className="relative -mx-6 -mt-10 mb-6 aspect-[340/191] overflow-hidden pointer-events-none lg:absolute lg:inset-0 lg:-z-1 lg:mx-0 lg:mt-0 lg:mb-0 lg:aspect-auto lg:overflow-visible">
         {(isDesktop ? phase.bgPcUrl : phase.bgMwUrl) && (
           <img src={(isDesktop ? phase.bgPcUrl : phase.bgMwUrl) ?? undefined} alt=""
             className="size-full object-cover"
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#2f343b]/70 via-[#3b4148]/45 to-[#1f2428]/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#181C1F] via-transparent to-transparent lg:bg-gradient-to-br lg:from-[#2f343b]/70 lg:via-[#3b4148]/45 lg:to-[#1f2428]/20" />
       </div>
 
       <motion.div

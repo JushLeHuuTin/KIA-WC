@@ -71,15 +71,19 @@ export default function Hero() {
   const videoFilter = useMotionValue('blur(0px)')
 
   useMotionValueEvent(scrollYProgress, 'change', (v) => {
-    kvOpacity.set(remap(v, 0.15, 0.28, 1, 0))
-    kvY.set(remap(v, 0, 0.28, 0, -40))
+    // Các mốc fade text (KV -> Intro -> Logo) để cách nhau, không chồng lấn --
+    // trước đây KV mờ dần 0.15-0.28 trong khi Intro đã hiện dần 0.25-0.4, tạo ra
+    // một đoạn cuộn chữ bị đè lên nhau (đọc không nổi). Giờ mỗi đoạn text mờ hẳn
+    // xong (opacity 0) rồi đoạn tiếp theo mới bắt đầu hiện.
+    kvOpacity.set(remap(v, 0.12, 0.22, 1, 0))
+    kvY.set(remap(v, 0, 0.22, 0, -40))
 
     introOpacity.set(
-      v < 0.5 ? remap(v, 0.25, 0.4, 0, 1) : remap(v, 0.62, 0.75, 1, 0),
+      v < 0.5 ? remap(v, 0.26, 0.4, 0, 1) : remap(v, 0.6, 0.72, 1, 0),
     )
-    introY.set(remap(v, 0.25, 0.4, 40, 0))
+    introY.set(remap(v, 0.26, 0.4, 40, 0))
 
-    logoOpacity.set(remap(v, 0.72, 0.88, 0, 1))
+    logoOpacity.set(remap(v, 0.76, 0.88, 0, 1))
 
     dimOpacity.set(remap(v, 0, 0.3, 0.2, 0.5))
     videoFilter.set(`blur(${remap(v, 0, 0.3, 0, 14)}px)`)
