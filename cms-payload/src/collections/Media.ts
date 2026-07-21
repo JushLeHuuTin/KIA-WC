@@ -21,5 +21,16 @@ export const Media: CollectionConfig = {
       type: 'text',
       label: 'Mô tả ảnh (alt text)',
     },
+    {
+      // Khoá định danh cố định cho từng vị trí sử dụng trong seed-content.mjs
+      // (vd "hero.pcVideo") -- không phải để user điền tay. Cho phép
+      // seed-content.mjs xoá đúng các Media do chính nó tạo ra rồi tạo lại từ
+      // đầu mỗi lần chạy, mà không đụng tới file admin tự upload qua CMS UI
+      // (những file đó không có seedKey).
+      name: 'seedKey',
+      type: 'text',
+      unique: true,
+      admin: { hidden: true },
+    },
   ],
 }

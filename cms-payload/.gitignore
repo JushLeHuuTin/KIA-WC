@@ -3,3 +3,6 @@ node_modules
 .env
 next-env.d.ts
 payload-types.ts
+
+# Local copy Payload ghi ra khi upload media (bản thật lưu trên Vercel Blob)
+media

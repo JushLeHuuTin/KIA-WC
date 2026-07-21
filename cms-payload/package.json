@@ -9,7 +9,8 @@
     "start": "next start",
     "generate:types": "payload generate:types",
     "generate:importmap": "payload generate:importmap",
-    "payload": "payload"
+    "payload": "payload",
+    "seed": "node --env-file=.env node_modules/tsx/dist/cli.mjs seed-content.mjs"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.86.0",
